@@ -1,0 +1,42 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Backend
+backend/**/target/
+backend/**/bin/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.DS_Store
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Database
+*.sql.bak
+*.dump
+
+# System
+.DS_Store
+Thumbs.db
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+*.class
+*.exe

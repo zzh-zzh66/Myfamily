@@ -1,0 +1,95 @@
+// 水墨风格设计规范 - 全局变量
+
+// 主色调 - 朱砂红（印章色）
+$color-primary: #C14A3F;
+$color-primary-hover: #A63D33;
+$color-primary-active: #8B3129;
+$color-primary-light: rgba(193, 74, 63, 0.1);
+
+// 功能色
+$color-success: #5B8C6B;
+$color-warning: #D4A84B;
+$color-danger: #C14A3F;
+$color-info: #3D5A80;
+
+// 族谱主题色
+$color-male: #3D5A80;    // 靛蓝 - 男性
+$color-female: #C14A3F;  // 朱砂 - 女性
+$color-spouse-line: #5B8C6B;  // 石绿 - 配偶线
+$color-parent-line: #4A4A4A;   // 灰墨 - 亲子线
+
+// 文字层次
+$color-text-primary: #1A1A1A;     // 浓墨 - 主要文字
+$color-text-regular: #4A4A4A;      // 淡墨 - 正文文字
+$color-text-secondary: #8C8C8C;   // 远山灰 - 辅助文字
+$color-text-placeholder: #BEBEBE; // 云烟灰 - 占位符
+
+// 背景色
+$color-bg-page: #F5F0E8;   // 宣纸白 - 页面背景
+$color-bg-card: #FDFBF7;   // 素纸白 - 卡片背景
+$color-bg-gray: #F0EBE3;   // 淡宣纸 - 灰背景
+$color-bg-hover: rgba(193, 74, 63, 0.05);
+
+// 边框色
+$color-border: #D4CFC5;
+$color-border-light: #E8E4DD;
+
+// 字体家族
+$font-family-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+$font-family-sans: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+$font-family-decorative: "Ma Shan Zheng", cursive;
+
+// 字号
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 22px;
+$font-size-2xl: 28px;
+$font-size-3xl: 32px;
+
+// 行高
+$line-height-xs: 18px;
+$line-height-sm: 22px;
+$line-height-base: 28px;
+$line-height-lg: 32px;
+$line-height-xl: 40px;
+$line-height-2xl: 44px;
+
+// 间距
+$spacing-xs: 8px;
+$spacing-sm: 16px;
+$spacing-md: 24px;
+$spacing-lg: 32px;
+$spacing-xl: 48px;
+$spacing-2xl: 64px;
+
+// 圆角
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+$border-radius-full: 9999px;
+
+// 阴影
+$shadow-sm: 0 2px 4px rgba(26, 26, 26, 0.05);
+$shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
+$shadow-lg: 0 8px 24px rgba(26, 26, 26, 0.12);
+$shadow-xl: 0 16px 48px rgba(26, 26, 26, 0.16);
+
+// 动效时长
+$transition-fast: 150ms;
+$transition-normal: 300ms;
+$transition-slow: 500ms;
+$transition-ink: 800ms;
+
+// 布局
+$header-height: 64px;
+$sidebar-width: 220px;
+$sidebar-collapsed-width: 64px;
+$footer-height: 48px;
+
+// 响应式断点
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1440px;

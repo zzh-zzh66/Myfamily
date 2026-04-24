@@ -1,0 +1,221 @@
+// 水墨风格设计规范 - Mixins
+
+// 响应式断点
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm {
+    @media (max-width: #{$breakpoint-sm - 1}) { @content; }
+  } @else if $breakpoint == md {
+    @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-lg - 1}) { @content; }
+  } @else if $breakpoint == lg {
+    @media (min-width: #{$breakpoint-lg}) and (max-width: #{$breakpoint-xl - 1}) { @content; }
+  } @else if $breakpoint == xl {
+    @media (min-width: #{$breakpoint-xl}) { @content; }
+  }
+}
+
+// 移动端
+@mixin mobile {
+  @media (max-width: #{$breakpoint-md - 1}) { @content; }
+}
+
+// 平板
+@mixin tablet {
+  @media (min-width: #{$breakpoint-md}) and (max-width: #{$breakpoint-lg - 1}) { @content; }
+}
+
+// 桌面
+@mixin desktop {
+  @media (min-width: #{$breakpoint-lg}) { @content; }
+}
+
+// Flex布局
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// 水墨渐变背景
+@mixin ink-gradient($direction: 135deg, $start: #C14A3F, $end: #A63D33) {
+  background: linear-gradient($direction, $start 0%, $end 100%);
+}
+
+// 宣纸纹理背景
+@mixin paper-background {
+  background-color: $color-bg-page;
+  background-image:
+    radial-gradient(ellipse at center, rgba(245, 240, 232, 0.8) 0%, rgba(240, 235, 225, 1) 100%),
+    url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+// 卡片样式
+@mixin card {
+  background: linear-gradient(145deg, $color-bg-card 0%, #F8F4EC 100%);
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-md;
+  border: 1px solid $color-border-light;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, $color-primary, transparent);
+    border-radius: 0 0 2px 2px;
+  }
+}
+
+// 按钮基础样式
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 32px;
+  font-size: $font-size-base;
+  font-family: $font-family-serif;
+  border-radius: $border-radius-sm;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-normal ease;
+  text-decoration: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// 主按钮
+@mixin button-primary {
+  @include button-base;
+  @include ink-gradient;
+  color: #FDFBF7;
+  box-shadow: 0 2px 8px rgba($color-primary, 0.3);
+
+  &:hover:not(:disabled) {
+    @include ink-gradient(135deg, $color-primary-hover, $color-primary-active);
+    box-shadow: 0 4px 16px rgba($color-primary, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// 次按钮
+@mixin button-secondary {
+  @include button-base;
+  background: transparent;
+  color: $color-text-regular;
+  border: 2px solid $color-text-regular;
+
+  &:hover:not(:disabled) {
+    background: rgba($color-text-regular, 0.05);
+    border-color: $color-text-primary;
+    color: $color-text-primary;
+  }
+}
+
+// 输入框
+@mixin form-input {
+  width: 100%;
+  height: 48px;
+  background: rgba($color-bg-card, 0.9);
+  border: 2px solid $color-border;
+  border-radius: $border-radius-sm;
+  padding: 0 16px;
+  font-size: $font-size-base;
+  font-family: $font-family-serif;
+  color: $color-text-primary;
+  transition: all $transition-normal ease;
+
+  &:focus {
+    border-color: $color-primary;
+    outline: none;
+    background: $color-bg-card;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+  }
+
+  &::placeholder {
+    color: $color-text-placeholder;
+    font-style: italic;
+  }
+}
+
+// 文本省略
+@mixin text-ellipsis($lines: 1) {
+  @if $lines == 1 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// 水墨过渡动画
+@mixin ink-transition {
+  transition: all $transition-ink cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// 节点样式
+@mixin node-base {
+  border-radius: $border-radius-md;
+  padding: 12px 20px;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: $shadow-md;
+  font-family: $font-family-serif;
+  position: relative;
+  transition: all $transition-normal ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 10%;
+    right: 10%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    border-radius: 2px;
+  }
+}
+
+@mixin node-male {
+  @include node-base;
+  @include ink-gradient(135deg, $color-male, darken($color-male, 10%));
+  color: #FDFBF7;
+  box-shadow: 0 4px 12px rgba($color-male, 0.4);
+}
+
+@mixin node-female {
+  @include node-base;
+  @include ink-gradient(135deg, $color-female, $color-primary-active);
+  color: #FDFBF7;
+  box-shadow: 0 4px 12px rgba($color-female, 0.4);
+}
