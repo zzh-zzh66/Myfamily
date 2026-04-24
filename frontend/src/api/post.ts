@@ -32,6 +32,10 @@ export function likePost(id: number) {
   return request.post<ApiResponse<void>>(`/posts/${id}/like`)
 }
 
+export function unlikePost(id: number) {
+  return request.delete<ApiResponse<void>>(`/posts/${id}/like`)
+}
+
 export interface Comment {
   id: number
   postId: number

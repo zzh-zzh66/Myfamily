@@ -34,7 +34,7 @@
             <span>族谱</span>
           </router-link>
           <router-link to="/member/add" class="nav-item">
-            <el-icon><UserPlus /></el-icon>
+            <el-icon><Plus /></el-icon>
             <span>成员</span>
           </router-link>
           <router-link to="/mail" class="nav-item">
@@ -115,7 +115,6 @@ import { useGenealogyStore } from '@/stores/genealogy'
 import GenealogyCanvas from '@/components/genealogy/GenealogyCanvas.vue'
 import {
   Document,
-  UserPlus,
   Message,
   Collection,
   Goblet,
@@ -128,7 +127,7 @@ import {
 
 const router = useRouter()
 const userStore = useUserStore()
-const geneal Store = useGenealogyStore()
+const genealogyStore = useGenealogyStore()
 
 const canvasContainer = ref<HTMLElement>()
 const scale = ref(1)

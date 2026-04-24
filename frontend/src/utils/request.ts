@@ -42,7 +42,7 @@ request.interceptors.response.use(
 
     // 根据业务码处理
     if (res.code === 200 || res.code === 0) {
-      return response
+      return response.data
     }
 
     // 处理特定的业务错误
