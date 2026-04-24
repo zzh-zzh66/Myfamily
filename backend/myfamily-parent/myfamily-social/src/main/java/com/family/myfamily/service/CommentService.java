@@ -62,7 +62,7 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
         // 检查是否是评论作者
         if (!comment.getAuthorId().equals(userId)) {
             User user = userMapper.selectById(userId);
-            if (!"ADMIN".equals(user.getRole())) {
+            if (user == null || !"ADMIN".equals(user.getRole())) {
                 throw new BusinessException("无权删除此评论");
             }
         }

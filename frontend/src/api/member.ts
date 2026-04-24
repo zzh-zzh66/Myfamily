@@ -29,7 +29,7 @@ export function deleteMember(id: number) {
 }
 
 export function getGenealogyTree(familyId?: number) {
-  return request.get<ApiResponse<GenealogyNode[]>>('/genealogy/tree', {
+  return request.get<ApiResponse<Member[]>>('/members/genealogy/tree', {
     params: { familyId }
   })
 }

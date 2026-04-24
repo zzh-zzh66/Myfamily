@@ -136,7 +136,7 @@ public class PostService extends ServiceImpl<PostMapper, Post> {
 
         // 检查是否是作者或管理员
         User user = userMapper.selectById(userId);
-        if (!post.getAuthorId().equals(userId) && !Constants.Role.ADMIN.equals(user.getRole())) {
+        if (!post.getAuthorId().equals(userId) && (user == null || !Constants.Role.ADMIN.equals(user.getRole()))) {
             throw new BusinessException("无权删除此动态");
         }
 

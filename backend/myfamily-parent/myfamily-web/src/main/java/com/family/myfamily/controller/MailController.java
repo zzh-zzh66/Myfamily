@@ -20,9 +20,9 @@ public class MailController {
 
     @GetMapping
     public Result<Page<MailDTO>> getMailList(
-            @RequestParam(defaultValue = "inbox") String folder,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(value = "folder", defaultValue = "inbox") String folder,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size,
             Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         Page<MailDTO> list = mailService.getMailList(userId, folder, page, size);
@@ -61,7 +61,7 @@ public class MailController {
     @DeleteMapping("/{id}")
     public Result<Void> deleteMail(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "inbox") String folder,
+            @RequestParam(value = "folder", defaultValue = "inbox") String folder,
             Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         mailService.deleteMail(id, userId, folder);

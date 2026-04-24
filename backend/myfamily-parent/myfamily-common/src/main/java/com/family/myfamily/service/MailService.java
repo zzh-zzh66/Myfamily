@@ -37,6 +37,8 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
             throw new BusinessException("用户不存在");
         }
 
+        Long memberId = user.getMemberId();
+
         LambdaQueryWrapper<Mail> wrapper = new LambdaQueryWrapper<>();
 
         if ("sent".equals(folder)) {
@@ -46,7 +48,10 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
             wrapper.eq(Mail::getFromUserId, userId)
                     .eq(Mail::getIsDeleted, 1);
         } else {
-            wrapper.eq(Mail::getToMemberId, user.getMemberId())
+            if (memberId == null) {
+                throw new BusinessException("用户未关联成员信息");
+            }
+            wrapper.eq(Mail::getToMemberId, memberId)
                     .eq(Mail::getDeletedByReceiver, 0);
         }
 
@@ -67,7 +72,9 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
         }
 
         User user = userMapper.selectById(userId);
-        if (mail.getToMemberId().equals(user.getMemberId()) && mail.getDeletedByReceiver() == 1) {
+        Long memberId = user != null ? user.getMemberId() : null;
+        if (memberId != null && mail.getToMemberId() != null
+                && mail.getToMemberId().equals(memberId) && mail.getDeletedByReceiver() == 1) {
             throw new BusinessException("邮件不存在");
         }
         if (mail.getFromUserId().equals(userId) && mail.getIsDeleted() == 1) {
@@ -138,7 +145,8 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
             }
             mail.setIsDeleted(1);
         } else {
-            if (!mail.getToMemberId().equals(user.getMemberId())) {
+            Long memberId = user != null ? user.getMemberId() : null;
+            if (memberId == null || !mail.getToMemberId().equals(memberId)) {
                 throw new BusinessException("无权删除此邮件");
             }
             mail.setDeletedByReceiver(1);
@@ -151,7 +159,7 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
 
     public Long getUnreadCount(Long userId) {
         User user = userMapper.selectById(userId);
-        if (user == null) {
+        if (user == null || user.getMemberId() == null) {
             return 0L;
         }
 

@@ -1,5 +1,6 @@
 package com.family.myfamily.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.family.myfamily.common.Result;
 import com.family.myfamily.dto.PostDTO;
 import com.family.myfamily.service.PostService;
@@ -24,10 +25,12 @@ public class PostController {
     }
 
     @GetMapping
-    public Result<List<PostDTO>> getPostList(
-            @RequestParam(required = false) Long familyId,
-            @RequestParam(required = false) String type) {
-        List<PostDTO> list = postService.getPostList(familyId, type);
+    public Result<Page<PostDTO>> getPostList(
+            @RequestParam(value = "familyId", required = false) Long familyId,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "20") int size) {
+        Page<PostDTO> list = postService.getPostPage(familyId, type, page, size);
         return Result.success(list);
     }
 

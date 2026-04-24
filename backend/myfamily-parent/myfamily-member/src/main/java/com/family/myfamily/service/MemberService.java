@@ -93,6 +93,34 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
         }).collect(Collectors.toList());
     }
 
+    public List<Member> getGenealogyTree(Long familyId) {
+        LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Member::getDeleted, 0);
+        if (familyId != null) {
+            wrapper.eq(Member::getFamilyId, familyId);
+        }
+        wrapper.orderByAsc(Member::getGeneration, Member::getId);
+        return memberMapper.selectList(wrapper);
+    }
+
+    public List<Member> getRootMembers(Long familyId) {
+        LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Member::getDeleted, 0)
+                .isNull(Member::getFatherId);
+        if (familyId != null) {
+            wrapper.eq(Member::getFamilyId, familyId);
+        }
+        wrapper.orderByAsc(Member::getGeneration);
+        return memberMapper.selectList(wrapper);
+    }
+
+    public List<Member> getChildren(Long memberId) {
+        LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Member::getFatherId, memberId)
+                .eq(Member::getDeleted, 0);
+        return memberMapper.selectList(wrapper);
+    }
+
     @Transactional
     public MemberDTO createMember(MemberDTO dto, Long userId) {
         log.info("创建成员: name={}, userId={}", dto.getName(), userId);
