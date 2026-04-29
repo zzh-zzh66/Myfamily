@@ -6,14 +6,26 @@
         返回
       </el-button>
       <div class="header-actions">
-        <el-button @click="handleReply">
-          <el-icon><Promotion /></el-icon>
-          回复
-        </el-button>
-        <el-button @click="handleForward">
-          <el-icon><Right /></el-icon>
-          转发
-        </el-button>
+        <template v-if="mail?.isDraft === 1">
+          <el-button type="primary" @click="handleSend">
+            <el-icon><Promotion /></el-icon>
+            发送
+          </el-button>
+          <el-button @click="handleEdit">
+            <el-icon><Edit /></el-icon>
+            编辑
+          </el-button>
+        </template>
+        <template v-else>
+          <el-button @click="handleReply">
+            <el-icon><Promotion /></el-icon>
+            回复
+          </el-button>
+          <el-button @click="handleForward">
+            <el-icon><Right /></el-icon>
+            转发
+          </el-button>
+        </template>
         <el-button @click="handleDelete">
           <el-icon><Delete /></el-icon>
           删除
@@ -30,12 +42,12 @@
         <h1 class="subject">{{ mail.subject }}</h1>
         <div class="mail-meta">
           <div class="sender-info">
-            <el-avatar :src="mail.senderAvatar" :size="48">
-              {{ mail.senderName?.charAt(0) }}
+            <el-avatar :src="mail.fromUserAvatar" :size="48">
+              {{ mail.fromUserName?.charAt(0) }}
             </el-avatar>
             <div class="sender-details">
-              <span class="sender-name">{{ mail.senderName }}</span>
-              <span class="sender-email">{{ mail.senderId }}@example.com</span>
+              <span class="sender-name">{{ mail.fromUserName }}</span>
+              <span class="sender-email">{{ mail.fromUserId }}@family.com</span>
             </div>
           </div>
           <div class="mail-time">
@@ -49,26 +61,53 @@
         <div class="content">{{ mail.content }}</div>
       </div>
 
+      <div v-if="attachmentImages.length > 0" class="mail-attachments">
+        <div class="attachments-title">附件 ({{ attachmentImages.length }})</div>
+        <div class="attachments-grid">
+          <el-image
+            v-for="(url, index) in attachmentImages"
+            :key="index"
+            :src="getFullImageUrl(url)"
+            :preview-src-list="attachmentImages.map(u => getFullImageUrl(u))"
+            :initial-index="index"
+            fit="cover"
+            class="attachment-image"
+          />
+        </div>
+      </div>
+
       <div class="mail-footer">
-        <el-button type="primary" @click="handleReply">
-          <el-icon><Promotion /></el-icon>
-          回复
-        </el-button>
-        <el-button @click="handleForward">
-          <el-icon><Right /></el-icon>
-          转发
-        </el-button>
+        <template v-if="mail?.isDraft === 1">
+          <el-button type="primary" @click="handleSend">
+            <el-icon><Promotion /></el-icon>
+            发送
+          </el-button>
+          <el-button @click="handleEdit">
+            <el-icon><Edit /></el-icon>
+            编辑草稿
+          </el-button>
+        </template>
+        <template v-else>
+          <el-button type="primary" @click="handleReply">
+            <el-icon><Promotion /></el-icon>
+            回复
+          </el-button>
+          <el-button @click="handleForward">
+            <el-icon><Right /></el-icon>
+            转发
+          </el-button>
+        </template>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowLeft, Promotion, Right, Delete } from '@element-plus/icons-vue'
-import { getMailDetail, deleteMail, markAsRead } from '@/api/mail'
+import { ArrowLeft, Promotion, Right, Delete, Edit } from '@element-plus/icons-vue'
+import { getMailDetail, deleteMail, markAsRead, sendMail } from '@/api/mail'
 import { formatDate } from '@/utils/format'
 import type { Mail } from '@/types/api'
 
@@ -77,6 +116,19 @@ const router = useRouter()
 
 const loading = ref(false)
 const mail = ref<Mail | null>(null)
+
+const attachmentImages = computed(() => {
+  if (!mail.value?.attachments) return []
+  return mail.value.attachments.split(',').filter(Boolean)
+})
+
+function getFullImageUrl(url: string) {
+  if (!url) return ''
+  if (url.startsWith('http') || url.startsWith('/uploads')) {
+    return url
+  }
+  return `/uploads/${url}`
+}
 
 async function fetchMailDetail() {
   const id = Number(route.params.id)
@@ -87,8 +139,7 @@ async function fetchMailDetail() {
     const res = await getMailDetail(id)
     mail.value = res.data
 
-    // 标记为已读
-    if (!res.data.isRead) {
+    if (res.data.isRead === 0 && res.data.isDraft !== 1) {
       markAsRead(id).catch(() => {})
     }
   } finally {
@@ -101,11 +152,45 @@ function goBack() {
 }
 
 function handleReply() {
-  router.push({ path: '/mail/compose', query: { replyTo: String(mail.value?.senderId), subject: `Re: ${mail.value?.subject}` } })
+  router.push({ path: '/mail/compose', query: { replyTo: String(mail.value?.fromUserId), subject: `Re: ${mail.value?.subject}` } })
 }
 
 function handleForward() {
   router.push({ path: '/mail/compose', query: { forward: 'true', subject: `Fwd: ${mail.value?.subject}`, content: mail.value?.content } })
+}
+
+function handleEdit() {
+  router.push({
+    path: '/mail/compose',
+    query: {
+      draftId: String(mail.value?.id),
+      to: String(mail.value?.toMemberId),
+      subject: mail.value?.subject,
+      content: mail.value?.content,
+      attachments: mail.value?.attachments || ''
+    }
+  })
+}
+
+async function handleSend() {
+  if (!mail.value?.toMemberId || !mail.value?.subject || !mail.value?.content) {
+    ElMessage.error('邮件信息不完整')
+    return
+  }
+  const draftId = mail.value.id
+  try {
+    await sendMail({
+      receiverId: mail.value.toMemberId,
+      subject: mail.value.subject,
+      content: mail.value.content,
+      attachments: mail.value.attachments || ''
+    })
+    await deleteMail(draftId)
+    ElMessage.success('发送成功')
+    router.push('/mail')
+  } catch (error) {
+    ElMessage.error('发送失败')
+  }
 }
 
 async function handleDelete() {
@@ -223,6 +308,30 @@ onMounted(() => {
     line-height: $line-height-base;
     white-space: pre-wrap;
     color: $color-text-regular;
+  }
+}
+
+.mail-attachments {
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid $color-border-light;
+
+  .attachments-title {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    margin-bottom: $spacing-sm;
+  }
+
+  .attachments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: $spacing-sm;
+
+    .attachment-image {
+      width: 100px;
+      height: 100px;
+      border-radius: $border-radius-sm;
+      cursor: pointer;
+    }
   }
 }
 

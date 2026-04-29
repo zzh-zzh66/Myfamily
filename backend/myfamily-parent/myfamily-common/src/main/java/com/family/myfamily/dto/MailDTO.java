@@ -15,13 +15,17 @@ public class MailDTO {
     private Long familyId;
     private Long fromUserId;
     private String fromUserName;
+    private String fromUserAvatar;
     private Long toMemberId;
     private String toMemberName;
+    private String toMemberAvatar;
     private String subject;
     private String content;
+    private String attachments;
     private Integer isRead;
     private Integer isDeleted;
     private Integer deletedByReceiver;
+    private Integer isDraft;
     private LocalDateTime createdAt;
 
     private Long receiverId;

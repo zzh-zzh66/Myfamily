@@ -24,6 +24,8 @@ public class Member {
 
     private Integer generation;
 
+    private String avatar;
+
     private Long fatherId;
 
     private Long motherId;

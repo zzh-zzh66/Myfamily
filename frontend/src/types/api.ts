@@ -95,9 +95,11 @@ export interface Mail {
   toMemberAvatar?: string
   subject: string
   content: string
+  attachments?: string
   isRead: number
   isDeleted?: number
   deletedByReceiver?: number
+  isDraft?: number
   createdAt: string
   updatedAt?: string
 }

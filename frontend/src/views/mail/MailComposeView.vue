@@ -57,6 +57,25 @@
           />
         </el-form-item>
 
+        <el-form-item label="添加附件">
+          <div class="attachment-area">
+            <el-upload
+              ref="uploadRef"
+              action="#"
+              :auto-upload="false"
+              :limit="5"
+              :on-change="handleFileChange"
+              :on-remove="handleFileRemove"
+              :file-list="fileList"
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              list-type="picture-card"
+            >
+              <el-icon><Plus /></el-icon>
+            </el-upload>
+            <div class="upload-tip">支持 JPG、PNG、GIF、WebP 格式，最多 5 张图片，每张最大 5MB</div>
+          </div>
+        </el-form-item>
+
         <div class="form-actions">
           <el-button type="primary" @click="handleSend" :loading="sending">
             发送
@@ -73,16 +92,21 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArrowLeft } from '@element-plus/icons-vue'
-import { sendMail, saveDraft, searchReceivers as searchReceiversApi } from '@/api/mail'
+import { ArrowLeft, Plus } from '@element-plus/icons-vue'
+import { sendMail, saveDraft, searchReceivers as searchReceiversApi, deleteMail, uploadImage } from '@/api/mail'
 
 const route = useRoute()
 const router = useRouter()
 
 const formRef = ref()
+const uploadRef = ref()
 const sending = ref(false)
 const searching = ref(false)
+const uploading = ref(false)
 const receiverOptions = ref<{ id: number; name: string; avatar?: string }[]>([])
+const currentDraftId = ref<number | null>(null)
+const fileList = ref<any[]>([])
+const attachmentUrls = ref<string[]>([])
 
 const form = reactive({
   receiverId: undefined as number | undefined,
@@ -119,17 +143,86 @@ async function searchReceivers(keyword: string) {
   }
 }
 
+async function handleFileChange(file: any) {
+  const isImage = file.raw.type.startsWith('image/')
+  const isLt5M = file.raw.size / 1024 / 1024 < 5
+
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件')
+    fileList.value = fileList.value.filter(f => f.uid !== file.uid)
+    return
+  }
+  if (!isLt5M) {
+    ElMessage.error('图片大小不能超过 5MB')
+    fileList.value = fileList.value.filter(f => f.uid !== file.uid)
+    return
+  }
+  if (fileList.value.length > 5) {
+    ElMessage.error('最多只能上传 5 张图片')
+    fileList.value = fileList.value.filter(f => f.uid !== file.uid)
+    return
+  }
+  fileList.value.push(file)
+}
+
+function handleFileRemove(file: any) {
+  fileList.value = fileList.value.filter(f => f.uid !== file.uid)
+  const urlIndex = attachmentUrls.value.findIndex(url => url.includes(file.name))
+  if (urlIndex > -1) {
+    attachmentUrls.value.splice(urlIndex, 1)
+  }
+}
+
+async function uploadAttachments() {
+  uploading.value = true
+  const uploadedUrls: string[] = []
+  try {
+    for (const file of fileList.value) {
+      console.log('Processing file:', file.name, 'url:', file.url)
+      if (file.url && (file.url.startsWith('blob:') || file.url.startsWith('data:'))) {
+        console.log('Uploading file:', file.name)
+        const res = await uploadImage(file.raw)
+        console.log('Upload response:', res)
+        if (res && res.data) {
+          console.log('Uploaded URL:', res.data)
+          uploadedUrls.push(res.data)
+        } else {
+          console.warn('Upload returned no data')
+        }
+      } else if (file.url) {
+        console.log('Using existing URL:', file.url)
+        uploadedUrls.push(file.url)
+      }
+    }
+    console.log('Final uploaded URLs:', uploadedUrls)
+    attachmentUrls.value = uploadedUrls
+  } catch (error) {
+    console.error('上传附件失败', error)
+    ElMessage.error('上传附件失败，请重试')
+  } finally {
+    uploading.value = false
+  }
+}
+
 async function handleSend() {
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
+
+  if (fileList.value.length > 0) {
+    await uploadAttachments()
+  }
 
   sending.value = true
   try {
     await sendMail({
       receiverId: form.receiverId!,
       subject: form.subject,
-      content: form.content
+      content: form.content,
+      attachments: attachmentUrls.value.join(',')
     })
+    if (currentDraftId.value) {
+      await deleteMail(currentDraftId.value)
+    }
     ElMessage.success('发送成功')
     router.push('/mail')
   } catch (error) {
@@ -140,11 +233,16 @@ async function handleSend() {
 }
 
 async function handleSaveDraft() {
+  if (fileList.value.length > 0) {
+    await uploadAttachments()
+  }
+
   try {
     await saveDraft({
       receiverId: form.receiverId,
       subject: form.subject,
-      content: form.content
+      content: form.content,
+      attachments: attachmentUrls.value.join(',')
     })
     ElMessage.success('草稿已保存')
     router.push('/mail')
@@ -158,12 +256,33 @@ function goBack() {
 }
 
 onMounted(() => {
-  // 如果有预填的收件人ID
+  if (route.query.draftId) {
+    currentDraftId.value = Number(route.query.draftId)
+  }
+
   if (route.query.to) {
     form.receiverId = Number(route.query.to)
-    searchReceivers('').then(() => {
-      // 设置默认值
-    })
+    searchReceivers('')
+  }
+
+  if (route.query.subject) {
+    form.subject = String(route.query.subject)
+  }
+
+  if (route.query.content) {
+    form.content = String(route.query.content)
+  }
+
+  if (route.query.attachments) {
+    const attachments = String(route.query.attachments)
+    if (attachments) {
+      attachmentUrls.value = attachments.split(',').filter(Boolean)
+      fileList.value = attachmentUrls.value.map((url, index) => ({
+        name: `image-${index}.jpg`,
+        url: url,
+        uid: index
+      }))
+    }
   }
 })
 </script>
@@ -233,5 +352,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
+}
+
+.attachment-area {
+  width: 100%;
+
+  .upload-tip {
+    margin-top: $spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
 }
 </style>

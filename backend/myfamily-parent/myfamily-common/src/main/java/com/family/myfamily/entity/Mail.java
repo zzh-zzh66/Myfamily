@@ -21,11 +21,15 @@ public class Mail {
 
     private String content;
 
+    private String attachments;
+
     private Integer isRead;
 
     private Integer isDeleted;
 
     private Integer deletedByReceiver;
+
+    private Integer isDraft;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;

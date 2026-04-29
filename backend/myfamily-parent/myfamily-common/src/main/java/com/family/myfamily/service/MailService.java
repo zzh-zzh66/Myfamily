@@ -43,10 +43,15 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
 
         if ("sent".equals(folder)) {
             wrapper.eq(Mail::getFromUserId, userId)
-                    .eq(Mail::getIsDeleted, 0);
+                    .eq(Mail::getIsDeleted, 0)
+                    .eq(Mail::getIsDraft, 0);
         } else if ("trash".equals(folder)) {
             wrapper.eq(Mail::getFromUserId, userId)
                     .eq(Mail::getIsDeleted, 1);
+        } else if ("drafts".equals(folder)) {
+            wrapper.eq(Mail::getFromUserId, userId)
+                    .eq(Mail::getIsDraft, 1)
+                    .eq(Mail::getIsDeleted, 0);
         } else {
             if (memberId == null) {
                 throw new BusinessException("用户未关联成员信息");
@@ -86,7 +91,7 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
 
     @Transactional
     public MailDTO sendMail(MailDTO dto, Long userId) {
-        Long toMemberId = dto.getToMemberId() != null ? dto.getToMemberId() : dto.getReceiverId();
+        Long toMemberId = (dto.getToMemberId() != null && dto.getToMemberId() > 0) ? dto.getToMemberId() : dto.getReceiverId();
         log.info("发送邮件: fromUserId={}, toMemberId={}", userId, toMemberId);
 
         User user = userMapper.selectById(userId);
@@ -104,10 +109,45 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
         mail.setFromUserId(userId);
         mail.setToMemberId(toMemberId);
         mail.setFamilyId(toMember.getFamilyId());
+        mail.setIsDraft(0);
 
         mailMapper.insert(mail);
 
         log.info("发送邮件成功: id={}", mail.getId());
+
+        return convertToDTO(mail);
+    }
+
+    @Transactional
+    public MailDTO saveDraft(MailDTO dto, Long userId) {
+        log.info("保存草稿: fromUserId={}, receiverId={}", userId, dto.getReceiverId());
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        Mail mail = new Mail();
+        BeanUtils.copyProperties(dto, mail);
+        mail.setFromUserId(userId);
+
+        if (dto.getToMemberId() != null && dto.getToMemberId() > 0) {
+            mail.setToMemberId(dto.getToMemberId());
+        } else if (dto.getReceiverId() != null && dto.getReceiverId() > 0) {
+            mail.setToMemberId(dto.getReceiverId());
+        }
+
+        if (mail.getToMemberId() != null && mail.getToMemberId() > 0) {
+            Member toMember = memberMapper.selectById(mail.getToMemberId());
+            if (toMember != null) {
+                mail.setFamilyId(toMember.getFamilyId());
+            }
+        }
+
+        mail.setIsDraft(1);
+        mailMapper.insert(mail);
+
+        log.info("保存草稿成功: id={}", mail.getId());
 
         return convertToDTO(mail);
     }
@@ -139,16 +179,20 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
             throw new BusinessException("邮件不存在");
         }
 
-        User user = userMapper.selectById(userId);
-
-        if ("sent".equals(folder)) {
+        if (mail.getIsDraft() != null && mail.getIsDraft() == 1) {
+            if (!mail.getFromUserId().equals(userId)) {
+                throw new BusinessException("无权删除此邮件");
+            }
+            mail.setIsDeleted(1);
+        } else if ("sent".equals(folder)) {
             if (!mail.getFromUserId().equals(userId)) {
                 throw new BusinessException("无权删除此邮件");
             }
             mail.setIsDeleted(1);
         } else {
+            User user = userMapper.selectById(userId);
             Long memberId = user != null ? user.getMemberId() : null;
-            if (memberId == null || !mail.getToMemberId().equals(memberId)) {
+            if (memberId == null || mail.getToMemberId() == null || !mail.getToMemberId().equals(memberId)) {
                 throw new BusinessException("无权删除此邮件");
             }
             mail.setDeletedByReceiver(1);
@@ -187,11 +231,13 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
         User fromUser = userMapper.selectById(mail.getFromUserId());
         if (fromUser != null) {
             dto.setFromUserName(fromUser.getUsername());
+            dto.setFromUserAvatar(fromUser.getAvatar());
         }
 
         Member toMember = memberMapper.selectById(mail.getToMemberId());
         if (toMember != null) {
             dto.setToMemberName(toMember.getName());
+            dto.setToMemberAvatar(toMember.getAvatar());
         }
 
         return dto;

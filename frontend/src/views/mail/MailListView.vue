@@ -90,7 +90,7 @@
               v-for="mail in mailList"
               :key="mail.id"
               class="mail-item"
-              :class="{ unread: !mail.isRead, selected: selectedIds.includes(mail.id) }"
+              :class="{ unread: mail.isRead === 0, selected: selectedIds.includes(mail.id) }"
               @click="viewMail(mail)"
             >
               <el-checkbox
@@ -99,12 +99,11 @@
                 @change="toggleSelect(mail.id)"
               />
               <div class="mail-star" @click.stop="toggleStar(mail.id)">
-                <el-icon :color="mail.isStarred ? '#D4A84B' : undefined">
-                  <Star v-if="mail.isStarred" />
-                  <StarFilled v-else />
+                <el-icon>
+                  <StarFilled />
                 </el-icon>
               </div>
-              <div class="mail-sender">{{ mail.senderName }}</div>
+              <div class="mail-sender">{{ mail.fromUserName }}</div>
               <div class="mail-subject">
                 <span class="subject-text">{{ mail.subject }}</span>
                 <span class="mail-preview"> - {{ mail.content }}</span>
@@ -139,7 +138,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { getMailList, markAsRead, toggleStar, deleteMail, getUnreadCount } from '@/api/mail'
 import { formatRelativeTime } from '@/utils/format'
-import { Box, Promotion, Document, Delete, Edit, Star, StarFilled, Check } from '@element-plus/icons-vue'
+import { Box, Promotion, Document, Delete, Edit, StarFilled, Check } from '@element-plus/icons-vue'
 import type { Mail } from '@/types/api'
 
 const router = useRouter()
@@ -196,10 +195,7 @@ function viewMail(mail: Mail) {
 async function toggleStar(id: number) {
   try {
     await toggleStar(id)
-    const mail = mailList.value.find(m => m.id === id)
-    if (mail) {
-      mail.isStarred = !mail.isStarred
-    }
+    ElMessage.success('操作成功')
   } catch (error) {
     ElMessage.error('操作失败')
   }

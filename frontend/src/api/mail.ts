@@ -7,6 +7,20 @@ export interface MailListParams extends PageParams {
   isStarred?: boolean
 }
 
+export interface SendMailData {
+  receiverId: number
+  subject: string
+  content: string
+  attachments?: string
+}
+
+export interface SaveDraftData {
+  receiverId?: number
+  subject?: string
+  content?: string
+  attachments?: string
+}
+
 export function getMailList(params: MailListParams) {
   return request.get<ApiResponse<PageResult<Mail>>>('/mails', { params })
 }
@@ -15,12 +29,20 @@ export function getMailDetail(id: number) {
   return request.get<ApiResponse<Mail>>(`/mails/${id}`)
 }
 
-export function sendMail(data: { receiverId: number; subject: string; content: string }) {
+export function sendMail(data: SendMailData) {
   return request.post<ApiResponse<Mail>>('/mails/send', data)
 }
 
-export function saveDraft(data: { receiverId?: number; subject?: string; content?: string }) {
+export function saveDraft(data: SaveDraftData) {
   return request.post<ApiResponse<Mail>>('/mails/draft', data)
+}
+
+export function uploadImage(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post<ApiResponse<string>>('/posts/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
 }
 
 export function deleteMail(id: number) {

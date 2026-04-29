@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/mails")
@@ -44,6 +46,13 @@ public class MailController {
         return Result.created("发送成功", result);
     }
 
+    @PostMapping("/draft")
+    public Result<MailDTO> saveDraft(@RequestBody MailDTO dto, Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        MailDTO result = mailService.saveDraft(dto, userId);
+        return Result.success("草稿保存成功", result);
+    }
+
     @PutMapping("/{id}/read")
     public Result<Void> markAsRead(@PathVariable Long id, Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
@@ -69,10 +78,13 @@ public class MailController {
     }
 
     @GetMapping("/unread-count")
-    public Result<Long> getUnreadCount(Authentication authentication) {
+    public Result<Map<String, Long>> getUnreadCount(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
         Long count = mailService.getUnreadCount(userId);
-        return Result.success(count);
+        Map<String, Long> result = new HashMap<>();
+        result.put("inbox", count);
+        result.put("total", count);
+        return Result.success(result);
     }
 
     @GetMapping("/search-receivers")
