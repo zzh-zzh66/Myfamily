@@ -9,16 +9,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import type { GenealogyNode } from '@/types/api'
+import type { CoupleNode } from '@/types/api'
 import {
-  drawTree,
-  drawConnectionLines,
   calculateTreeLayout,
+  drawGenerationLines,
+  drawConnectionLines,
+  drawTree,
+  findNodeAtPoint,
   TreeLayout
 } from '@/utils/genealogyCanvas'
 
 const props = defineProps<{
-  data: GenealogyNode[]
+  coupleNodesMap: Map<number, CoupleNode[]>
+  parentChildrenMap: Map<number, number[]>
   scale?: number
   offsetX?: number
   offsetY?: number
@@ -26,12 +29,13 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'node-click', node: GenealogyNode): void
-  (e: 'node-dbclick', node: GenealogyNode): void
+  (e: 'node-click', memberId: number): void
+  (e: 'node-dbclick', memberId: number): void
 }>()
 
 const canvasRef = ref<HTMLCanvasElement>()
 const layout = ref<TreeLayout | null>(null)
+const initialized = ref(false)
 
 function render() {
   const canvas = canvasRef.value
@@ -40,98 +44,85 @@ function render() {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
 
-  // 设置画布大小
   const parent = canvas.parentElement
   if (parent) {
     canvas.width = parent.clientWidth
     canvas.height = parent.clientHeight
   }
 
-  // 清空画布
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // 保存上下文状态
   ctx.save()
 
-  // 应用缩放和偏移
   const scale = props.scale || 1
   const offsetX = props.offsetX || 0
   const offsetY = props.offsetY || 0
-  ctx.translate(canvas.width / 2 + offsetX, 50 + offsetY)
+
+  ctx.translate(offsetX, offsetY)
   ctx.scale(scale, scale)
 
-  // 计算树布局
-  layout.value = calculateTreeLayout(props.data)
+  layout.value = calculateTreeLayout(props.coupleNodesMap, props.parentChildrenMap)
 
-  // 绘制连接线
-  if (layout.value) {
-    drawConnectionLines(ctx, layout.value)
+  if (layout.value && !initialized.value) {
+    initialized.value = true
   }
 
-  // 绘制节点
   if (layout.value) {
-    drawTree(ctx, layout.value, props.data, {
-      onNodeClick: (node) => emit('node-click', node),
-      onNodeDbClick: (node) => emit('node-dbclick', node),
+    // drawGenerationLines - removed per user request
+    drawConnectionLines(ctx, layout.value, props.coupleNodesMap)
+    drawTree(ctx, layout.value, props.coupleNodesMap, {
+      onNodeClick: (memberId) => emit('node-click', memberId),
+      onNodeDbClick: (memberId) => emit('node-dbclick', memberId),
       selectedId: props.selectedId
     })
   }
 
-  // 恢复上下文状态
   ctx.restore()
 }
 
-// 监听数据变化
-watch(() => props.data, render, { deep: true })
+watch(() => props.coupleNodesMap, () => {
+  initialized.value = false
+  render()
+}, { deep: true })
+watch(() => props.parentChildrenMap, () => {
+  initialized.value = false
+  render()
+}, { deep: true })
 watch(() => props.scale, render)
 watch(() => props.offsetX, render)
 watch(() => props.offsetY, render)
 watch(() => props.selectedId, render)
 
-// 处理点击事件
 function handleCanvasClick(e: MouseEvent) {
   if (!layout.value || !canvasRef.value) return
 
   const rect = canvasRef.value.getBoundingClientRect()
-  const x = e.clientX - rect.left
-  const y = e.clientY - rect.top
+  const clickX = e.clientX - rect.left
+  const clickY = e.clientY - rect.top
 
-  // 计算实际坐标（考虑缩放和偏移）
   const scale = props.scale || 1
   const offsetX = props.offsetX || 0
   const offsetY = props.offsetY || 0
-  const actualX = (x - canvasRef.value.width / 2 - offsetX) / scale
-  const actualY = (y - 50 - offsetY) / scale
 
-  // 遍历节点检测点击
-  for (const node of props.data) {
-    const nodeLayout = layout.value.nodes.get(node.id)
-    if (nodeLayout && isPointInNode(actualX, actualY, nodeLayout)) {
+  const actualX = (clickX - offsetX) / scale
+  const actualY = (clickY - offsetY) / scale
+
+  const coupleNode = findNodeAtPoint(actualX, actualY, layout.value, props.coupleNodesMap)
+
+  if (coupleNode) {
+    const memberId = coupleNode.male?.id || coupleNode.female?.id
+    if (memberId) {
       if (e.detail === 2) {
-        emit('node-dbclick', node)
+        emit('node-dbclick', memberId)
       } else {
-        emit('node-click', node)
+        emit('node-click', memberId)
       }
-      return
     }
   }
 }
 
-function isPointInNode(
-  x: number,
-  y: number,
-  layout: { x: number; y: number; width: number; height: number }
-): boolean {
-  return (
-    x >= layout.x - layout.width / 2 &&
-    x <= layout.x + layout.width / 2 &&
-    y >= layout.y - layout.height / 2 &&
-    y <= layout.y + layout.height / 2
-  )
-}
-
-// 窗口大小变化时重新渲染
 function handleResize() {
+  initialized.value = false
   render()
 }
 

@@ -28,7 +28,7 @@ export interface User {
   avatar?: string
   phone?: string
   familyId?: number
-  role?: 'admin' | 'member'
+  role?: 'admin' | 'member' | 'ADMIN' | 'MEMBER'
   createdAt?: string
   updatedAt?: string
 }
@@ -55,6 +55,17 @@ export interface Member {
   updatedAt?: string
 }
 
+// CoupleNode - 夫妻组合节点（用于族谱展示）
+export interface CoupleNode {
+  id: string  // 组合节点的唯一ID，格式 "maleId-femaleId" 或 "singleId"
+  male?: Member    // 男性成员（如果配偶是女性）
+  female?: Member  // 女性成员（如果配偶是男性）
+  isCouple: boolean  // 是否是夫妻组合节点
+  generation: number
+  children: string[]  // 子节点的 CoupleNode ID 列表
+  fatherId?: string   // 父亲 CoupleNode ID（如果有）
+}
+
 // 族谱树节点类型（用于前端渲染）
 export interface GenealogyNode {
   id: number
@@ -64,6 +75,7 @@ export interface GenealogyNode {
   generation: number
   spouse?: string
   spouseId?: number
+  spouseName?: string  // 配偶姓名（用于显示）
   children?: GenealogyNode[]
   spouseNode?: GenealogyNode
   fatherNode?: GenealogyNode
@@ -90,6 +102,18 @@ export interface Mail {
   updatedAt?: string
 }
 
+// 评论相关类型
+export interface Comment {
+  id: number
+  postId: number
+  authorId: number
+  authorName: string
+  authorAvatar?: string
+  content: string
+  likeCount?: number
+  createdAt: string
+}
+
 // 动态相关类型
 export interface Post {
   id: number
@@ -99,10 +123,11 @@ export interface Post {
   authorAvatar?: string
   title?: string
   content: string
+  images?: string[]
   type?: 'EVENT' | 'ACHIEVEMENT' | 'MILESTONE' | 'OTHER'
   status?: 'PENDING' | 'APPROVED' | 'REJECTED'
   viewCount?: number
-  likes: number
+  likeCount: number
   comments: number
   isLiked?: boolean
   createdAt: string

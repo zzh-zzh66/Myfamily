@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,12 +18,19 @@ public class MemberDTO {
     private Long familyId;
     private String name;
     private String gender;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate deathDate;
+
     private Integer generation;
     private Long fatherId;
     private Long motherId;
+    private Long spouseId;
     private String spouseName;
     private Integer status;
+    private Boolean isVirtual;
     private LocalDateTime createdAt;
 }

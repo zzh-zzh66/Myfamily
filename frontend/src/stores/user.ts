@@ -15,6 +15,7 @@ export const useUserStore = defineStore('user', () => {
   const userName = computed(() => userInfo.value?.username || '')
   const userAvatar = computed(() => userInfo.value?.avatar || '')
   const userId = computed(() => userInfo.value?.id || 0)
+  const isAdmin = computed(() => userInfo.value?.role === 'ADMIN' || userInfo.value?.role === 'admin')
 
   // 方法
   async function fetchUserInfo() {
@@ -67,6 +68,7 @@ export const useUserStore = defineStore('user', () => {
     userName,
     userAvatar,
     userId,
+    isAdmin,
     fetchUserInfo,
     setToken,
     setUserInfo,

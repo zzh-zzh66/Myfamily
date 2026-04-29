@@ -3,7 +3,7 @@
     <!-- 顶部导航 -->
     <header class="header">
       <div class="header-left">
-        <h1 class="logo">MyFamily</h1>
+        <h1 class="logo" @click="router.push('/genealogy')">MyFamily</h1>
       </div>
       <div class="header-right">
         <el-dropdown @command="handleCommand">
@@ -301,6 +301,7 @@ onMounted(() => {
       font-family: $font-family-decorative;
       font-size: 28px;
       color: $color-primary;
+      cursor: pointer;
     }
   }
 

@@ -23,4 +23,6 @@ public class MailDTO {
     private Integer isDeleted;
     private Integer deletedByReceiver;
     private LocalDateTime createdAt;
+
+    private Long receiverId;
 }

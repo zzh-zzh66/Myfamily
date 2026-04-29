@@ -66,3 +66,15 @@ export function uploadPostImage(file: File) {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
+
+export function getPendingPosts() {
+  return request.get<ApiResponse<Post[]>>('/admin/posts/pending')
+}
+
+export function approvePost(id: number) {
+  return request.post<ApiResponse<void>>(`/admin/posts/${id}/approve`)
+}
+
+export function rejectPost(id: number, reason: string) {
+  return request.post<ApiResponse<void>>(`/admin/posts/${id}/reject?reason=${encodeURIComponent(reason)}`)
+}

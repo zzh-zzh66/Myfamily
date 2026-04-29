@@ -19,6 +19,8 @@ public class Post {
 
     private String content;
 
+    private String images;
+
     private String type;
 
     private String status;

@@ -1,0 +1,206 @@
+[GenealogyTree] Created singleNode: single-1 {
+  "name": "李守仁",
+  "generation": 1
+}
+genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 2-12 {
+  "male": "李文博",
+  "female": "王桂兰",
+  "generation": 2
+}
+genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-3 {
+  "name": "李文秀",
+  "generation": 2
+}
+genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 4-13 {
+  "male": "李建华",
+  "female": "张秀英",
+  "generation": 3
+}
+genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 5-14 {
+  "male": "李建军",
+  "female": "陈凤英",
+  "generation": 3
+}
+genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-6 {
+  "name": "李建芳",
+  "generation": 3
+}
+genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 7-15 {
+  "male": "李志强",
+  "female": "刘雅琴",
+  "generation": 4
+}
+genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-8 {
+  "name": "李晓燕",
+  "generation": 4
+}
+genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-9 {
+  "name": "李志远",
+  "generation": 4
+}
+genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-10 {
+  "name": "李思琪",
+  "generation": 5
+}
+genealogyTree.ts:11 [GenealogyTree] === Assigning children === 
+genealogyTree.ts:11 [GenealogyTree] Processing generation 1 
+genealogyTree.ts:11 [GenealogyTree]   Node single-1 (male=李守仁) children: 2-12, single-3 {
+  "childMembers": [
+    {
+      "id": 2,
+      "name": "李文博",
+      "gen": 2
+    },
+    {
+      "id": 3,
+      "name": "李文秀",
+      "gen": 2
+    }
+  ]
+}
+genealogyTree.ts:11 [GenealogyTree] Processing generation 2 
+genealogyTree.ts:11 [GenealogyTree]   Node 2-12 (male=李文博) children: 4-13, 5-14, single-6 {
+  "childMembers": [
+    {
+      "id": 4,
+      "name": "李建华",
+      "gen": 3
+    },
+    {
+      "id": 5,
+      "name": "李建军",
+      "gen": 3
+    },
+    {
+      "id": 6,
+      "name": "李建芳",
+      "gen": 3
+    }
+  ]
+}
+genealogyTree.ts:11 [GenealogyTree]   Node single-3 (female=李文秀) children: none {
+  "childMembers": []
+}
+genealogyTree.ts:11 [GenealogyTree] Processing generation 3 
+genealogyTree.ts:11 [GenealogyTree]   Node 4-13 (male=李建华) children: 7-15, single-8 {
+  "childMembers": [
+    {
+      "id": 7,
+      "name": "李志强",
+      "gen": 4
+    },
+    {
+      "id": 8,
+      "name": "李晓燕",
+      "gen": 4
+    }
+  ]
+}
+genealogyTree.ts:11 [GenealogyTree]   Node 5-14 (male=李建军) children: single-9 {
+  "childMembers": [
+    {
+      "id": 9,
+      "name": "李志远",
+      "gen": 4
+    }
+  ]
+}
+genealogyTree.ts:11 [GenealogyTree]   Node single-6 (female=李建芳) children: none {
+  "childMembers": []
+}
+genealogyTree.ts:11 [GenealogyTree] Processing generation 4 
+genealogyTree.ts:11 [GenealogyTree]   Node 7-15 (male=李志强) children: single-10 {
+  "childMembers": [
+    {
+      "id": 10,
+      "name": "李思琪",
+      "gen": 5
+    }
+  ]
+}
+genealogyTree.ts:11 [GenealogyTree]   Node single-8 (female=李晓燕) children: none {
+  "childMembers": []
+}
+genealogyTree.ts:11 [GenealogyTree]   Node single-9 (male=李志远) children: none {
+  "childMembers": []
+}
+genealogyTree.ts:11 [GenealogyTree] Processing generation 5 
+genealogyTree.ts:11 [GenealogyTree]   Node single-10 (female=李思琪) children: none {
+  "childMembers": []
+}
+genealogyTree.ts:11 [GenealogyTree] === Final coupleNodesMap === 
+genealogyTree.ts:11 [GenealogyTree] Generation 1: [
+  {
+    "id": "single-1",
+    "isCouple": false,
+    "children": [
+      "2-12",
+      "single-3"
+    ]
+  }
+]
+genealogyTree.ts:11 [GenealogyTree] Generation 2: [
+  {
+    "id": "2-12",
+    "isCouple": true,
+    "children": [
+      "4-13",
+      "5-14",
+      "single-6"
+    ]
+  },
+  {
+    "id": "single-3",
+    "isCouple": false,
+    "children": []
+  }
+]
+genealogyTree.ts:11 [GenealogyTree] Generation 3: [
+  {
+    "id": "4-13",
+    "isCouple": true,
+    "children": [
+      "7-15",
+      "single-8"
+    ]
+  },
+  {
+    "id": "5-14",
+    "isCouple": true,
+    "children": [
+      "single-9"
+    ]
+  },
+  {
+    "id": "single-6",
+    "isCouple": false,
+    "children": []
+  }
+]
+genealogyTree.ts:11 [GenealogyTree] Generation 4: [
+  {
+    "id": "7-15",
+    "isCouple": true,
+    "children": [
+      "single-10"
+    ]
+  },
+  {
+    "id": "single-8",
+    "isCouple": false,
+    "children": []
+  },
+  {
+    "id": "single-9",
+    "isCouple": false,
+    "children": []
+  }
+]
+genealogyTree.ts:11 [GenealogyTree] Generation 5: [
+  {
+    "id": "single-10",
+    "isCouple": false,
+    "children": []
+  }
+]
+content_main.js:4403 This page uses Chrome's Built-In AI features (LanguageDetector)! We're always improving our models; please submit your feedback here: https://issues.chromium.org/issues/new?component=1583316

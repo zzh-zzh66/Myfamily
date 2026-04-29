@@ -121,18 +121,60 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
         return memberMapper.selectList(wrapper);
     }
 
+    public List<MemberDTO> getChildrenAsDTO(Long memberId) {
+        List<Member> children = getChildren(memberId);
+        return children.stream().map(member -> {
+            MemberDTO dto = new MemberDTO();
+            BeanUtils.copyProperties(member, dto);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<MemberDTO> getSingleChildren(Long memberId) {
+        LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Member::getFatherId, memberId)
+               .eq(Member::getDeleted, 0)
+               .isNull(Member::getSpouseId);
+        List<Member> children = memberMapper.selectList(wrapper);
+        return children.stream().map(member -> {
+            MemberDTO dto = new MemberDTO();
+            BeanUtils.copyProperties(member, dto);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
     @Transactional
     public MemberDTO createMember(MemberDTO dto, Long userId) {
         log.info("创建成员: name={}, userId={}", dto.getName(), userId);
 
-        // 验证父亲存在
+        // 验证父亲存在并设置辈分
         if (dto.getFatherId() != null) {
             Member father = memberMapper.selectById(dto.getFatherId());
             if (father == null || father.getDeleted() == 1) {
                 throw new BusinessException("父亲不存在");
             }
-            // 设置辈分比父亲低一代
             dto.setGeneration(father.getGeneration() + 1);
+            if (dto.getFamilyId() == null) {
+                dto.setFamilyId(father.getFamilyId());
+            }
+        }
+
+        // 如果没有familyId，设置默认值
+        if (dto.getFamilyId() == null) {
+            dto.setFamilyId(1L);
+        }
+
+        // 如果没有generation，设置默认值
+        if (dto.getGeneration() == null) {
+            dto.setGeneration(1);
+        }
+
+        // 处理配偶关系：根据配偶姓名查找并设置spouseId
+        if (dto.getSpouseName() != null && !dto.getSpouseName().isEmpty()) {
+            Member spouse = findSpouseByName(dto.getSpouseName(), dto.getFamilyId());
+            if (spouse != null && spouse.getDeleted() == 0) {
+                dto.setSpouseId(spouse.getId());
+            }
         }
 
         Member member = new Member();
@@ -141,6 +183,19 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
         member.setStatus(Constants.Status.ENABLED);
 
         memberMapper.insert(member);
+
+        // 如果有配偶，更新配偶的spouseId
+        if (dto.getSpouseId() != null) {
+            Member spouse = memberMapper.selectById(dto.getSpouseId());
+            if (spouse != null && spouse.getDeleted() == 0) {
+                spouse.setSpouseId(member.getId());
+                spouse.setSpouseName(member.getName());
+                memberMapper.updateById(spouse);
+            }
+            // 更新自己的配偶名称
+            member.setSpouseName(dto.getSpouseName());
+            memberMapper.updateById(member);
+        }
 
         // 创建族谱路径关系
         createGenealogyPaths(member);
@@ -152,6 +207,17 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
         return result;
     }
 
+    private Member findSpouseByName(String spouseName, Long familyId) {
+        LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Member::getName, spouseName)
+               .eq(Member::getDeleted, 0);
+        if (familyId != null) {
+            wrapper.eq(Member::getFamilyId, familyId);
+        }
+        wrapper.last("LIMIT 1");
+        return memberMapper.selectOne(wrapper);
+    }
+
     @Transactional
     public MemberDTO updateMember(Long id, MemberDTO dto, Long userId) {
         log.info("更新成员: id={}, userId={}", id, userId);
@@ -161,13 +227,35 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
             throw new BusinessException("成员不存在");
         }
 
-        member.setName(dto.getName());
-        member.setGender(dto.getGender());
-        member.setBirthDate(dto.getBirthDate());
-        member.setDeathDate(dto.getDeathDate());
-        member.setSpouseName(dto.getSpouseName());
-        member.setFatherId(dto.getFatherId());
-        member.setMotherId(dto.getMotherId());
+        if (dto.getName() != null) {
+            member.setName(dto.getName());
+        }
+        if (dto.getGender() != null) {
+            member.setGender(dto.getGender());
+        }
+        if (dto.getBirthDate() != null) {
+            member.setBirthDate(dto.getBirthDate());
+        }
+        if (dto.getDeathDate() != null) {
+            member.setDeathDate(dto.getDeathDate());
+        }
+        if (dto.getSpouseName() != null) {
+            member.setSpouseName(dto.getSpouseName());
+        }
+        if (dto.getSpouseId() != null) {
+            member.setSpouseId(dto.getSpouseId());
+        } else {
+            member.setSpouseId(null);
+        }
+        if (dto.getFatherId() != null) {
+            member.setFatherId(dto.getFatherId());
+        }
+        if (dto.getMotherId() != null) {
+            member.setMotherId(dto.getMotherId());
+        }
+        if (dto.getIsVirtual() != null) {
+            member.setIsVirtual(dto.getIsVirtual());
+        }
         member.setUpdatedBy(userId);
 
         memberMapper.updateById(member);
@@ -196,11 +284,29 @@ public class MemberService extends ServiceImpl<MemberMapper, Member> {
             throw new BusinessException("成员不存在");
         }
 
-        member.setDeleted(1);
-        member.setUpdatedBy(userId);
-        memberMapper.updateById(member);
+        memberMapper.deleteById(id);
 
         log.info("删除成员成功: id={}", id);
+    }
+
+    @Transactional
+    public void clearSpouseRelation(Long memberId, Long userId) {
+        log.info("清除配偶关系: memberId={}, userId={}", memberId, userId);
+
+        Member member = memberMapper.selectById(memberId);
+        if (member == null || member.getDeleted() == 1) {
+            throw new BusinessException("成员不存在");
+        }
+
+        Long spouseId = member.getSpouseId();
+
+        memberMapper.clearSpouseById(memberId, userId);
+
+        if (spouseId != null) {
+            memberMapper.clearSpouseById(spouseId, userId);
+        }
+
+        log.info("清除配偶关系成功: memberId={}, spouseId={}", memberId, spouseId);
     }
 
     public List<MemberDTO> getAncestors(Long memberId) {

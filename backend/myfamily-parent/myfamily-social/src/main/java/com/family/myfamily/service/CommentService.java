@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.family.myfamily.dto.CommentDTO;
 import com.family.myfamily.entity.Comment;
 import com.family.myfamily.entity.User;
+import com.family.myfamily.event.CommentEvent;
 import com.family.myfamily.exception.BusinessException;
 import com.family.myfamily.mapper.CommentMapper;
 import com.family.myfamily.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
 
     private final CommentMapper commentMapper;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<CommentDTO> getCommentListByPost(Long postId) {
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
@@ -46,6 +49,11 @@ public class CommentService extends ServiceImpl<CommentMapper, Comment> {
         commentMapper.insert(comment);
 
         log.info("创建评论成功: id={}", comment.getId());
+
+        // 发布评论创建事件
+        User author = userMapper.selectById(userId);
+        String authorName = author != null ? author.getUsername() : "未知用户";
+        eventPublisher.publishEvent(new CommentEvent(this, "NEW_COMMENT", comment.getId(), comment.getPostId(), authorName, comment.getContent()));
 
         return convertToDTO(comment);
     }

@@ -86,14 +86,15 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
 
     @Transactional
     public MailDTO sendMail(MailDTO dto, Long userId) {
-        log.info("发送邮件: fromUserId={}, toMemberId={}", userId, dto.getToMemberId());
+        Long toMemberId = dto.getToMemberId() != null ? dto.getToMemberId() : dto.getReceiverId();
+        log.info("发送邮件: fromUserId={}, toMemberId={}", userId, toMemberId);
 
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
 
-        Member toMember = memberMapper.selectById(dto.getToMemberId());
+        Member toMember = memberMapper.selectById(toMemberId);
         if (toMember == null) {
             throw new BusinessException("收件人不存在");
         }
@@ -101,6 +102,7 @@ public class MailService extends ServiceImpl<MailMapper, Mail> {
         Mail mail = new Mail();
         BeanUtils.copyProperties(dto, mail);
         mail.setFromUserId(userId);
+        mail.setToMemberId(toMemberId);
         mail.setFamilyId(toMember.getFamilyId());
 
         mailMapper.insert(mail);

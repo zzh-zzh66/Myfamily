@@ -55,7 +55,8 @@ export function formatYearRange(start: string | Date, end?: string | Date | null
 
 // 截断文本
 export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text
+  if (!text) return ''
+  if (text.length <= maxLength) return text
   return text.substring(0, maxLength) + '...'
 }
 

@@ -2,7 +2,7 @@
   <div class="post-page">
     <header class="header">
       <div class="header-left">
-        <h1 class="logo">MyFamily</h1>
+        <h1 class="logo" @click="router.push('/genealogy')">MyFamily</h1>
       </div>
       <div class="header-right">
         <el-button type="primary" @click="goCreate">
@@ -18,6 +18,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item command="profile">个人主页</el-dropdown-item>
+              <el-dropdown-item v-if="userStore.isAdmin" command="admin-review">动态审核</el-dropdown-item>
               <el-dropdown-item command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -43,11 +44,13 @@
             </div>
           </div>
 
-          <div class="post-content">
-            <p>{{ post.content }}</p>
-          </div>
+          <div class="post-content" v-html="post.content"></div>
 
-          <div class="post-images" v-if="post.images && post.images.length > 0">
+          <div
+            class="post-images"
+            :class="`images-${post.images.length}`"
+            v-if="post.images && post.images.length > 0"
+          >
             <el-image
               v-for="(img, index) in post.images"
               :key="index"
@@ -61,7 +64,7 @@
           <div class="post-actions">
             <div class="action-item" :class="{ active: post.isLiked }" @click.stop="toggleLike(post)">
               <el-icon><Star /></el-icon>
-              <span>{{ post.likes }}</span>
+              <span>{{ post.likeCount }}</span>
             </div>
             <div class="action-item" @click.stop="viewPost(post)">
               <el-icon><ChatLineSquare /></el-icon>
@@ -111,7 +114,10 @@ async function fetchPostList() {
   loading.value = true
   try {
     const res = await getPostList({ page: currentPage.value, size: pageSize.value })
-    postList.value = res.data.records
+    postList.value = res.data.records.map((post: any) => ({
+      ...post,
+      images: post.images ? post.images.split(',').filter((img: string) => img.trim()) : []
+    }))
     total.value = res.data.total
   } finally {
     loading.value = false
@@ -122,10 +128,10 @@ async function toggleLike(post: Post) {
   try {
     if (post.isLiked) {
       await unlikePost(post.id)
-      post.likes--
+      post.likeCount = Math.max(0, (post.likeCount || 0) - 1)
     } else {
       await likePost(post.id)
-      post.likes++
+      post.likeCount = (post.likeCount || 0) + 1
     }
     post.isLiked = !post.isLiked
   } catch (error) {
@@ -155,6 +161,8 @@ function handleCommand(command: string) {
     userStore.logout()
   } else if (command === 'profile') {
     router.push('/profile')
+  } else if (command === 'admin-review') {
+    router.push('/admin/posts')
   }
 }
 
@@ -187,6 +195,7 @@ onMounted(() => {
       font-family: $font-family-decorative;
       font-size: 28px;
       color: $color-primary;
+      cursor: pointer;
     }
   }
 
@@ -258,14 +267,53 @@ onMounted(() => {
 
 .post-images {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: $spacing-xs;
   margin-bottom: $spacing-md;
 
   .post-image {
     width: 100%;
-    height: 150px;
+    height: 100%;
+    object-fit: cover;
     border-radius: $border-radius-sm;
+    cursor: pointer;
+  }
+
+  &.images-1 {
+    grid-template-columns: 1fr;
+    max-height: 400px;
+
+    .post-image {
+      max-height: 400px;
+      object-fit: contain;
+    }
+  }
+
+  &.images-2 {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 250px;
+  }
+
+  &.images-3 {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 200px;
+  }
+
+  &.images-4 {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 200px;
+  }
+
+  &.images-5,
+  &.images-6 {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 200px;
+  }
+
+  &.images-7,
+  &.images-8,
+  &.images-9 {
+    grid-template-columns: repeat(3, 1fr);
+    max-height: 180px;
   }
 }
 

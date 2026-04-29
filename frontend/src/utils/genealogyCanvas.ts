@@ -1,8 +1,7 @@
-import type { GenealogyNode } from '@/types/api'
+import type { Member, CoupleNode } from '@/types/api'
 
-// 节点布局信息
 export interface NodeLayout {
-  id: number
+  id: string
   x: number
   y: number
   width: number
@@ -10,270 +9,455 @@ export interface NodeLayout {
   generation: number
 }
 
-// 树布局信息
 export interface TreeLayout {
-  nodes: Map<number, NodeLayout>
+  nodes: Map<string, NodeLayout>
   generationCount: number
   maxWidth: number
+  maxHeight: number
+  generations: number[]
+  rootNodeId: string | null
+  rootX: number
+  rootY: number
 }
 
-// 节点尺寸
-const NODE_WIDTH = 120
-const NODE_HEIGHT = 80
-const HORIZONTAL_GAP = 40
-const VERTICAL_GAP = 100
+const SINGLE_NODE_WIDTH = 100
+const SINGLE_NODE_HEIGHT = 60
+const COUPLE_NODE_WIDTH = 200
+const COUPLE_NODE_HEIGHT = 70
+const HORIZONTAL_GAP = 80
+const VERTICAL_GAP = 20
+const GENERATION_HEIGHT = 150
+const NODE_MARGIN = 30
+const BASE_X = 100
 
-// 计算树布局
-export function calculateTreeLayout(nodes: GenealogyNode[]): TreeLayout {
-  const nodeMap = new Map<number, GenealogyNode>()
-  const nodeLayouts = new Map<number, NodeLayout>()
-  const generationMap = new Map<number, number>()
+export function calculateTreeLayout(
+  coupleNodesMap: Map<number, CoupleNode[]>,
+  parentChildrenMap: Map<number, number[]>
+): TreeLayout {
+  const nodes = new Map<string, NodeLayout>()
+  const generations: number[] = []
 
-  // 构建节点映射
-  nodes.forEach(node => {
-    nodeMap.set(node.id, node)
+  coupleNodesMap.forEach((_, generation) => {
+    if (!generations.includes(generation)) {
+      generations.push(generation)
+    }
+  })
+  generations.sort((a, b) => a - b)
+
+  const generationCount = generations.length
+
+  const memberMap = new Map<number, Member>()
+  coupleNodesMap.forEach((coupleNodes) => {
+    coupleNodes.forEach(cn => {
+      if (cn.male) memberMap.set(cn.male.id, cn.male)
+      if (cn.female) memberMap.set(cn.female.id, cn.female)
+    })
   })
 
-  // 找出根节点（没有父亲的节点）
-  const rootNodes = nodes.filter(node => {
-    const parentNode = node.fatherNode
-    return !parentNode
-  })
-
-  // 按代计算布局
-  function calculateGeneration(node: GenealogyNode, generation: number) {
-    const existingCount = generationMap.get(generation) || 0
-    generationMap.set(generation, existingCount + 1)
-
-    // 计算当前节点位置
-    const x = (existingCount - (generationMap.get(generation)! - 1) / 2) * (NODE_WIDTH + HORIZONTAL_GAP)
-    const y = generation * (NODE_HEIGHT + VERTICAL_GAP)
-
-    nodeLayouts.set(node.id, {
-      id: node.id,
-      x,
-      y,
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-      generation
+  function findRootCoupleNodes(): CoupleNode[] {
+    const childrenOfCouples = new Set<string>()
+    coupleNodesMap.forEach((coupleNodes) => {
+      coupleNodes.forEach(cn => {
+        cn.children.forEach(childId => childrenOfCouples.add(childId))
+      })
     })
 
-    // 递归计算子节点
-    if (node.children && node.children.length > 0) {
-      node.children.forEach(child => calculateGeneration(child, generation + 1))
+    const roots: CoupleNode[] = []
+    generations.forEach(gen => {
+      const nodesInGen = coupleNodesMap.get(gen) || []
+      nodesInGen.forEach(cn => {
+        if (!childrenOfCouples.has(cn.id)) {
+          roots.push(cn)
+        }
+      })
+    })
+    return roots
+  }
+
+  const rootNodes = findRootCoupleNodes()
+
+  let rootNodeId: string | null = null
+  let rootX = 0
+  let rootY = 0
+
+  function getNodeWidth(cn: CoupleNode): number {
+    return cn.isCouple ? COUPLE_NODE_WIDTH : SINGLE_NODE_WIDTH
+  }
+
+  function calculateSubtreeWidth(coupleNode: CoupleNode, processed: Set<string>): number {
+    if (processed.has(coupleNode.id)) return 0
+    processed.add(coupleNode.id)
+
+    const nodeWidth = getNodeWidth(coupleNode)
+
+    if (coupleNode.children.length === 0) {
+      return nodeWidth
+    }
+
+    let totalWidth = 0
+    coupleNode.children.forEach(childId => {
+      const childNode = findCoupleNodeById(childId, coupleNodesMap)
+      if (childNode) {
+        totalWidth += calculateSubtreeWidth(childNode, processed)
+      }
+    })
+    totalWidth += (coupleNode.children.length - 1) * HORIZONTAL_GAP
+    return Math.max(totalWidth, nodeWidth)
+  }
+
+  function positionNode(coupleNode: CoupleNode, x: number, y: number): { width: number } {
+    const nodeWidth = getNodeWidth(coupleNode)
+    const nodeHeight = coupleNode.isCouple ? COUPLE_NODE_HEIGHT : SINGLE_NODE_HEIGHT
+
+    nodes.set(coupleNode.id, {
+      id: coupleNode.id,
+      x,
+      y,
+      width: nodeWidth,
+      height: nodeHeight,
+      generation: coupleNode.generation
+    })
+
+    if (coupleNode.children.length === 0) {
+      return { width: nodeWidth }
+    }
+
+    let totalChildrenWidth = 0
+    const childWidths: { id: string, width: number }[] = []
+    coupleNode.children.forEach(childId => {
+      const childNode = findCoupleNodeById(childId, coupleNodesMap)
+      if (childNode) {
+        const processed = new Set<string>()
+        const childWidth = calculateSubtreeWidth(childNode, processed)
+        childWidths.push({ id: childId, width: childWidth })
+        totalChildrenWidth += childWidth
+      }
+    })
+    totalChildrenWidth += (coupleNode.children.length - 1) * HORIZONTAL_GAP
+
+    const startX = x + (nodeWidth - totalChildrenWidth) / 2
+    let currentX = startX
+
+    coupleNode.children.forEach(childId => {
+      const childNode = findCoupleNodeById(childId, coupleNodesMap)
+      if (childNode) {
+        const childLayout = positionNode(childNode, currentX, y + GENERATION_HEIGHT)
+        currentX += childLayout.width + HORIZONTAL_GAP
+      }
+    })
+
+    return { width: totalChildrenWidth }
+  }
+
+  function positionUnplacedNodes() {
+    generations.forEach(gen => {
+      const nodesInGen = coupleNodesMap.get(gen) || []
+
+      const placedNodes: { cn: CoupleNode, layout: NodeLayout }[] = []
+      const unplacedNodes: CoupleNode[] = []
+
+      nodesInGen.forEach(cn => {
+        if (nodes.has(cn.id)) {
+          placedNodes.push({ cn, layout: nodes.get(cn.id)! })
+        } else {
+          unplacedNodes.push(cn)
+        }
+      })
+
+      if (unplacedNodes.length === 0) return
+
+      if (placedNodes.length === 0) {
+        let currentX = BASE_X
+        unplacedNodes.forEach(cn => {
+          const nodeWidth = getNodeWidth(cn)
+          const nodeHeight = cn.isCouple ? COUPLE_NODE_HEIGHT : SINGLE_NODE_HEIGHT
+          nodes.set(cn.id, {
+            id: cn.id,
+            x: currentX,
+            y: 80 + generations.indexOf(gen) * GENERATION_HEIGHT,
+            width: nodeWidth,
+            height: nodeHeight,
+            generation: cn.generation
+          })
+          currentX += nodeWidth + HORIZONTAL_GAP
+        })
+      } else {
+        const placedSorted = placedNodes.sort((a, b) => a.layout.x - b.layout.x)
+        const firstPlaced = placedSorted[0]
+        const lastPlaced = placedSorted[placedSorted.length - 1]
+
+        let currentX = lastPlaced.layout.x + lastPlaced.layout.width + HORIZONTAL_GAP
+        unplacedNodes.forEach(cn => {
+          const nodeWidth = getNodeWidth(cn)
+          const nodeHeight = cn.isCouple ? COUPLE_NODE_HEIGHT : SINGLE_NODE_HEIGHT
+          nodes.set(cn.id, {
+            id: cn.id,
+            x: currentX,
+            y: 80 + generations.indexOf(gen) * GENERATION_HEIGHT,
+            width: nodeWidth,
+            height: nodeHeight,
+            generation: cn.generation
+          })
+          currentX += nodeWidth + HORIZONTAL_GAP
+        })
+      }
+    })
+  }
+
+  if (rootNodes.length > 0) {
+    const mainRoot = rootNodes[0]
+    rootNodeId = mainRoot.id
+
+    let startX = BASE_X
+    rootNodes.forEach(root => {
+      const processed = new Set<string>()
+      const rootWidth = calculateSubtreeWidth(root, processed)
+      positionNode(root, startX, 80)
+      startX += rootWidth + HORIZONTAL_GAP * 2
+    })
+
+    positionUnplacedNodes()
+
+    const rootLayout = nodes.get(rootNodeId)
+    if (rootLayout) {
+      rootX = rootLayout.x + rootLayout.width / 2
+      rootY = rootLayout.y
     }
   }
 
-  // 从根节点开始计算
-  rootNodes.forEach((root, index) => {
-    calculateGeneration(root, 0)
-  })
-
-  // 计算最大宽度
   let maxWidth = 0
-  generationMap.forEach(count => {
-    const width = count * NODE_WIDTH + (count - 1) * HORIZONTAL_GAP
-    maxWidth = Math.max(maxWidth, width)
+  let maxHeight = 0
+  nodes.forEach(layout => {
+    maxWidth = Math.max(maxWidth, layout.x + layout.width + NODE_MARGIN)
+    maxHeight = Math.max(maxHeight, layout.y + layout.height + NODE_MARGIN)
   })
 
   return {
-    nodes: nodeLayouts,
-    generationCount: generationMap.size,
-    maxWidth
+    nodes,
+    generationCount,
+    maxWidth,
+    maxHeight,
+    generations,
+    rootNodeId,
+    rootX,
+    rootY
   }
 }
 
-// 绘制连接线
+function findCoupleNodeById(id: string, coupleNodesMap: Map<number, CoupleNode[]>): CoupleNode | null {
+  for (const nodes of coupleNodesMap.values()) {
+    const found = nodes.find(n => n.id === id)
+    if (found) return found
+  }
+  return null
+}
+
+export function drawGenerationLines(
+  ctx: CanvasRenderingContext2D,
+  layout: TreeLayout,
+  canvasWidth: number,
+  canvasHeight: number
+) {
+  // Generation lines removed per user request
+}
+
 export function drawConnectionLines(
   ctx: CanvasRenderingContext2D,
-  layout: TreeLayout
+  layout: TreeLayout,
+  coupleNodesMap: Map<number, CoupleNode[]>
 ) {
-  // 设置线条样式
-  ctx.strokeStyle = '#4A4A4A'
+  ctx.save()
+  ctx.strokeStyle = '#5D4E37'
   ctx.lineWidth = 2
   ctx.lineCap = 'round'
 
-  // 绘制亲子连接线
-  layout.nodes.forEach((nodeLayout, nodeId) => {
-    const node = findNodeById(nodeId)
-    if (!node) return
+  coupleNodesMap.forEach((coupleNodes) => {
+    coupleNodes.forEach(coupleNode => {
+      const parentLayout = layout.nodes.get(coupleNode.id)
+      if (!parentLayout) return
 
-    // 查找父亲节点
-    if (node.fatherNode) {
-      const fatherLayout = layout.nodes.get(node.fatherNode.id)
-      if (fatherLayout) {
-        drawParentChildLine(ctx, fatherLayout, nodeLayout)
-      }
-    }
+      const parentCenterX = parentLayout.x + parentLayout.width / 2
+      const parentBottomY = parentLayout.y + parentLayout.height
 
-    // 绘制配偶连接线
-    if (node.spouseNode) {
-      const spouseLayout = layout.nodes.get(node.spouseNode.id)
-      if (spouseLayout) {
-        drawSpouseLine(ctx, nodeLayout, spouseLayout)
-      }
-    }
+      coupleNode.children.forEach(childId => {
+        const childLayout = layout.nodes.get(childId)
+        if (!childLayout) return
+
+        const childCenterX = childLayout.x + childLayout.width / 2
+        const childTopY = childLayout.y
+
+        ctx.beginPath()
+        ctx.moveTo(parentCenterX, parentBottomY)
+        ctx.lineTo(parentCenterX, parentBottomY + 30)
+        ctx.lineTo(childCenterX, childTopY - 30)
+        ctx.lineTo(childCenterX, childTopY)
+        ctx.stroke()
+      })
+    })
   })
+
+  ctx.restore()
 }
 
-// 绘制父子连接线
-function drawParentChildLine(
-  ctx: CanvasRenderingContext2D,
-  parent: NodeLayout,
-  child: NodeLayout
-) {
-  const startX = parent.x
-  const startY = parent.y + parent.height / 2
-  const endX = child.x
-  const endY = child.y - child.height / 2
-
-  ctx.beginPath()
-  ctx.moveTo(startX, startY)
-  ctx.lineTo(endX, endY)
-  ctx.stroke()
-}
-
-// 绘制配偶连接线
-function drawSpouseLine(
-  ctx: CanvasRenderingContext2D,
-  node1: NodeLayout,
-  node2: NodeLayout
-) {
-  const startX = node1.x + node1.width / 2
-  const startY = node1.y
-  const endX = node2.x - node2.width / 2
-  const endY = node2.y
-
-  ctx.beginPath()
-  ctx.moveTo(startX, startY)
-  ctx.lineTo(endX, endY)
-  ctx.strokeStyle = '#5B8C6B' // 石绿色
-  ctx.stroke()
-  ctx.strokeStyle = '#4A4A4A' // 恢复默认颜色
-}
-
-// 根据ID查找节点
-let allNodes: GenealogyNode[] = []
-
-export function setNodes(nodes: GenealogyNode[]) {
-  allNodes = nodes
-}
-
-function findNodeById(id: number): GenealogyNode | undefined {
-  return allNodes.find(node => node.id === id)
-}
-
-// 绘制树
 export function drawTree(
   ctx: CanvasRenderingContext2D,
   layout: TreeLayout,
-  nodes: GenealogyNode[],
+  coupleNodesMap: Map<number, CoupleNode[]>,
   options: {
-    onNodeClick?: (node: GenealogyNode) => void
-    onNodeDbClick?: (node: GenealogyNode) => void
+    onNodeClick?: (memberId: number) => void
+    onNodeDbClick?: (memberId: number) => void
     selectedId?: number | null
   }
 ) {
-  setNodes(nodes)
-
-  nodes.forEach(node => {
-    const nodeLayout = layout.nodes.get(node.id)
-    if (nodeLayout) {
-      drawNode(ctx, node, nodeLayout, options.selectedId === node.id)
-    }
+  coupleNodesMap.forEach((coupleNodes) => {
+    coupleNodes.forEach(coupleNode => {
+      const nodeLayout = layout.nodes.get(coupleNode.id)
+      if (nodeLayout) {
+        const isSelected = options.selectedId !== undefined && options.selectedId !== null && (
+          (coupleNode.male && coupleNode.male.id === options.selectedId) ||
+          (coupleNode.female && coupleNode.female.id === options.selectedId)
+        )
+        drawCoupleNode(ctx, coupleNode, nodeLayout, isSelected)
+      }
+    })
   })
 }
 
-// 绘制单个节点
-function drawNode(
+export function drawCoupleNode(
   ctx: CanvasRenderingContext2D,
-  node: GenealogyNode,
+  coupleNode: CoupleNode,
   layout: NodeLayout,
   isSelected: boolean
 ) {
   const { x, y, width, height } = layout
 
-  // 保存上下文
   ctx.save()
 
-  // 绘制节点背景
-  const gradient = ctx.createLinearGradient(
-    x - width / 2,
-    y - height / 2,
-    x + width / 2,
-    y + height / 2
-  )
+  const gradient = ctx.createLinearGradient(x, y, x + width, y + height)
 
-  if (node.gender === 'male') {
-    gradient.addColorStop(0, '#3D5A80')
-    gradient.addColorStop(1, '#2D4A70')
+  if (coupleNode.isCouple) {
+    gradient.addColorStop(0, '#5D4E37')
+    gradient.addColorStop(1, '#4A3E2B')
   } else {
-    gradient.addColorStop(0, '#C14A3F')
-    gradient.addColorStop(1, '#A63D33')
+    if (coupleNode.male) {
+      gradient.addColorStop(0, '#3D5A80')
+      gradient.addColorStop(1, '#2D4A70')
+    } else if (coupleNode.female) {
+      gradient.addColorStop(0, '#8B4A4A')
+      gradient.addColorStop(1, '#7A3D3D')
+    } else {
+      gradient.addColorStop(0, '#666666')
+      gradient.addColorStop(1, '#555555')
+    }
   }
 
-  // 圆角矩形
   const radius = 8
   ctx.beginPath()
-  ctx.moveTo(x - width / 2 + radius, y - height / 2)
-  ctx.lineTo(x + width / 2 - radius, y - height / 2)
-  ctx.quadraticCurveTo(x + width / 2, y - height / 2, x + width / 2, y - height / 2 + radius)
-  ctx.lineTo(x + width / 2, y + height / 2 - radius)
-  ctx.quadraticCurveTo(x + width / 2, y + height / 2, x + width / 2 - radius, y + height / 2)
-  ctx.lineTo(x - width / 2 + radius, y + height / 2)
-  ctx.quadraticCurveTo(x - width / 2, y + height / 2, x - width / 2, y + height / 2 - radius)
-  ctx.lineTo(x - width / 2, y - height / 2 + radius)
-  ctx.quadraticCurveTo(x - width / 2, y - height / 2, x - width / 2 + radius, y - height / 2)
+  ctx.moveTo(x + radius, y)
+  ctx.lineTo(x + width - radius, y)
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
+  ctx.lineTo(x + width, y + height - radius)
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
+  ctx.lineTo(x + radius, y + height)
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
+  ctx.lineTo(x, y + radius)
+  ctx.quadraticCurveTo(x, y, x + radius, y)
   ctx.closePath()
 
   ctx.fillStyle = gradient
-  ctx.fill()
-
-  // 绘制阴影
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.2)'
-  ctx.shadowBlur = 8
-  ctx.shadowOffsetY = 4
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+  ctx.shadowBlur = 6
+  ctx.shadowOffsetY = 3
   ctx.fill()
   ctx.shadowColor = 'transparent'
 
-  // 绘制选中边框
   if (isSelected) {
-    ctx.strokeStyle = '#C14A3F'
+    ctx.strokeStyle = '#C9A962'
     ctx.lineWidth = 3
     ctx.stroke()
   }
 
-  // 绘制顶部高光
   ctx.beginPath()
-  ctx.moveTo(x - width / 2 + radius * 2, y - height / 2 + 2)
-  ctx.lineTo(x + width / 2 - radius * 2, y - height / 2 + 2)
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
-  ctx.lineWidth = 2
-  ctx.lineCap = 'round'
+  ctx.moveTo(x + radius * 2, y + 2)
+  ctx.lineTo(x + width - radius * 2, y + 2)
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+  ctx.lineWidth = 1
   ctx.stroke()
 
-  // 绘制名字
-  ctx.fillStyle = '#FFFFFF'
-  ctx.font = 'bold 14px "Noto Serif SC", serif'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(node.name, x, y - 5)
+  if (coupleNode.isCouple && coupleNode.male && coupleNode.female) {
+    const leftNameX = x + 50
+    const rightNameX = x + width - 50
+    const nameY = y + height / 2
 
-  // 绘制辈分
-  ctx.font = '12px "Noto Sans SC", sans-serif'
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-  ctx.fillText(`第${node.generation}代`, x, y + 15)
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = 'bold 12px "Noto Serif SC", serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(coupleNode.male.name, leftNameX, nameY)
 
-  // 恢复上下文
+    ctx.fillText(coupleNode.female.name, rightNameX, nameY)
+
+    ctx.fillStyle = '#FF6B6B'
+    ctx.font = '16px serif'
+    ctx.fillText('♥', x + width / 2, nameY)
+
+    ctx.fillStyle = '#C9A962'
+    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(`第${coupleNode.generation}代`, x + 6, y + 12)
+  } else if (coupleNode.male) {
+    ctx.fillStyle = '#C9A962'
+    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(`第${coupleNode.male.generation}代`, x + 6, y + 12)
+
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = 'bold 14px "Noto Serif SC", serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(coupleNode.male.name, x + width / 2, y + height / 2 + 5)
+  } else if (coupleNode.female) {
+    ctx.fillStyle = '#C9A962'
+    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
+    ctx.textAlign = 'left'
+    ctx.fillText(`第${coupleNode.female.generation}代`, x + 6, y + 12)
+
+    ctx.fillStyle = '#FFFFFF'
+    ctx.font = 'bold 14px "Noto Serif SC", serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(coupleNode.female.name, x + width / 2, y + height / 2 + 5)
+  }
+
   ctx.restore()
 }
 
-// 导出绘图工具
-export const genealogyCanvasUtils = {
-  calculateTreeLayout,
-  drawConnectionLines,
-  drawTree,
-  drawNode,
-  NODE_WIDTH,
-  NODE_HEIGHT
+export function isPointInNode(
+  x: number,
+  y: number,
+  layout: NodeLayout
+): boolean {
+  return (
+    x >= layout.x &&
+    x <= layout.x + layout.width &&
+    y >= layout.y &&
+    y <= layout.y + layout.height
+  )
+}
+
+export function findNodeAtPoint(
+  pointX: number,
+  pointY: number,
+  layout: TreeLayout,
+  coupleNodesMap: Map<number, CoupleNode[]>
+): CoupleNode | null {
+  for (const nodes of coupleNodesMap.values()) {
+    for (const coupleNode of nodes) {
+      const nodeLayout = layout.nodes.get(coupleNode.id)
+      if (nodeLayout && isPointInNode(pointX, pointY, nodeLayout)) {
+        return coupleNode
+      }
+    }
+  }
+  return null
 }

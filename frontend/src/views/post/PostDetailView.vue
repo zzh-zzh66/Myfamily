@@ -11,6 +11,18 @@
       <el-skeleton :rows="10" animated />
     </div>
 
+    <div v-else-if="error" class="error-state">
+      <el-result
+        icon="error"
+        :title="error"
+        sub-title="请稍后重试或返回上一页"
+      >
+        <template #extra>
+          <el-button type="primary" @click="goBack">返回</el-button>
+        </template>
+      </el-result>
+    </div>
+
     <div v-else-if="post" class="post-content">
       <div class="post-card">
         <div class="post-header">
@@ -24,9 +36,13 @@
         </div>
 
         <div class="post-body">
-          <p class="post-text">{{ post.content }}</p>
+          <div class="post-text" v-html="post.content"></div>
 
-          <div class="post-images" v-if="post.images && post.images.length > 0">
+          <div
+            class="post-images"
+            :class="`images-${post.images?.length || 0}`"
+            v-if="post.images && post.images.length > 0"
+          >
             <el-image
               v-for="(img, index) in post.images"
               :key="index"
@@ -41,7 +57,7 @@
         <div class="post-actions">
           <div class="action-item" :class="{ active: post.isLiked }" @click="toggleLike">
             <el-icon><Star /></el-icon>
-            <span>{{ post.likes }} 赞</span>
+            <span>{{ post.likeCount }} 赞</span>
           </div>
           <div class="action-item">
             <el-icon><ChatLineSquare /></el-icon>
@@ -100,6 +116,7 @@ const router = useRouter()
 
 const loading = ref(false)
 const post = ref<Post | null>(null)
+const error = ref<string | null>(null)
 const comments = ref<Comment[]>([])
 const commentContent = ref('')
 const commentLoading = ref(false)
@@ -109,10 +126,16 @@ async function fetchPostDetail() {
   if (!id) return
 
   loading.value = true
+  error.value = null
   try {
     const res = await getPostDetail(id)
-    post.value = res.data
+    const data = res.data as any
+    data.images = data.images ? data.images.split(',').filter((img: string) => img.trim()) : []
+    post.value = data
     await fetchComments()
+  } catch (err: any) {
+    error.value = err.message || '加载失败，请稍后重试'
+    post.value = null
   } finally {
     loading.value = false
   }
@@ -122,7 +145,7 @@ async function fetchComments() {
   const id = Number(route.params.id)
   try {
     const res = await getPostComments(id)
-    comments.value = res.data.records
+    comments.value = res.data
   } catch (error) {
     console.error('获取评论失败', error)
   }
@@ -134,10 +157,10 @@ async function toggleLike() {
   try {
     if (post.value.isLiked) {
       await unlikePost(post.value.id)
-      post.value.likes--
+      post.value.likeCount = Math.max(0, (post.value.likeCount || 0) - 1)
     } else {
       await likePost(post.value.id)
-      post.value.likes++
+      post.value.likeCount = (post.value.likeCount || 0) + 1
     }
     post.value.isLiked = !post.value.isLiked
   } catch (error) {
@@ -189,6 +212,12 @@ onMounted(() => {
   padding: $spacing-lg;
 }
 
+.error-state {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: $spacing-lg;
+}
+
 .post-content {
   max-width: 800px;
   margin: 0 auto;
@@ -235,13 +264,53 @@ onMounted(() => {
 
   .post-images {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: $spacing-sm;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
 
     .post-image {
       width: 100%;
-      height: 200px;
-      border-radius: $border-radius-md;
+      height: 100%;
+      object-fit: cover;
+      border-radius: $border-radius-sm;
+      cursor: pointer;
+    }
+
+    &.images-1 {
+      grid-template-columns: 1fr;
+      max-height: 500px;
+
+      .post-image {
+        max-height: 500px;
+        object-fit: contain;
+      }
+    }
+
+    &.images-2 {
+      grid-template-columns: repeat(2, 1fr);
+      max-height: 350px;
+    }
+
+    &.images-3 {
+      grid-template-columns: repeat(3, 1fr);
+      max-height: 250px;
+    }
+
+    &.images-4 {
+      grid-template-columns: repeat(2, 1fr);
+      max-height: 250px;
+    }
+
+    &.images-5,
+    &.images-6 {
+      grid-template-columns: repeat(3, 1fr);
+      max-height: 250px;
+    }
+
+    &.images-7,
+    &.images-8,
+    &.images-9 {
+      grid-template-columns: repeat(3, 1fr);
+      max-height: 200px;
     }
   }
 }

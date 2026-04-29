@@ -64,6 +64,18 @@ public class MemberController {
         return Result.success(descendants);
     }
 
+    @GetMapping("/children/{fatherId}")
+    public Result<List<MemberDTO>> getChildren(@PathVariable Long fatherId) {
+        List<MemberDTO> children = memberService.getChildrenAsDTO(fatherId);
+        return Result.success(children);
+    }
+
+    @GetMapping("/single-children/{fatherId}")
+    public Result<List<MemberDTO>> getSingleChildren(@PathVariable Long fatherId) {
+        List<MemberDTO> singleChildren = memberService.getSingleChildren(fatherId);
+        return Result.success(singleChildren);
+    }
+
     @PostMapping
     public Result<MemberDTO> createMember(
             @RequestBody MemberDTO dto,
@@ -81,6 +93,15 @@ public class MemberController {
         Long userId = (Long) authentication.getPrincipal();
         MemberDTO result = memberService.updateMember(id, dto, userId);
         return Result.success("更新成功", result);
+    }
+
+    @DeleteMapping("/{id}/spouse")
+    public Result<Void> clearSpouseRelation(
+            @PathVariable Long id,
+            Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        memberService.clearSpouseRelation(id, userId);
+        return Result.success("清除配偶关系成功", null);
     }
 
     @DeleteMapping("/{id}")

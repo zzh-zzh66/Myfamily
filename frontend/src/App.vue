@@ -5,16 +5,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
+import { connectWebSocket, disconnectWebSocket } from '@/utils/websocket'
 
 const userStore = useUserStore()
 
 onMounted(() => {
-  // 初始化用户状态
   if (userStore.token) {
     userStore.fetchUserInfo()
+    connectWebSocket()
   }
+})
+
+onUnmounted(() => {
+  disconnectWebSocket()
 })
 </script>
 

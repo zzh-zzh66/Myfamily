@@ -1,0 +1,328 @@
+# 族谱树优化总结
+
+## 概述
+
+本次优化主要解决了族谱树的夫妻节点组合、树状结构显示、画布定位和缩放交互等问题。
+
+---
+
+## 一、后端修复
+
+### 1.1 夫妻节点匹配逻辑修复
+
+**问题**：
+- 原代码使用 `spouseNameMap` 构建映射时，key 使用的是 `spouseName`（配偶姓名）
+- 导致张守义查询 `spouseNameMap.get('张王氏')` 时，返回的是张守义自己，而非张王氏
+
+**修复方案**：
+```java
+// 修复前（错误）
+Map<String, Member> spouseNameMap = allMembers.stream()
+    .collect(Collectors.toMap(
+        m -> m.getSpouseName().toLowerCase(),  // key = 配偶姓名
+        m -> m,
+        (a, b) -> a
+    ));
+
+// 修复后（正确）
+Map<String, Member> nameToMemberMap = allMembers.stream()
+    .collect(Collectors.toMap(
+        m -> m.getName().toLowerCase(),  // key = 成员自己的姓名
+        m -> m,
+        (a, b) -> a
+    ));
+```
+
+**文件**：`backend/src/main/java/com/family/genealogy/service/GenealogyService.java`
+
+### 1.2 双向确认逻辑
+
+```java
+private Member findSpouse(Member member, Map<String, Member> nameToMemberMap) {
+    if (member.getSpouseName() == null || member.getSpouseName().isEmpty()) {
+        return null;
+    }
+
+    // 用配偶的姓名查找
+    String spouseNameKey = member.getSpouseName().toLowerCase();
+    Member potentialSpouse = nameToMemberMap.get(spouseNameKey);
+
+    if (potentialSpouse == null) {
+        return null;
+    }
+
+    // 双向确认：对方的 spouseName 也应该等于我的姓名
+    if (potentialSpouse.getSpouseName() != null
+            && potentialSpouse.getSpouseName().equalsIgnoreCase(member.getName())) {
+        // 确保性别不同
+        if (!member.getGender().equals(potentialSpouse.getGender())) {
+            return potentialSpouse;
+        }
+    }
+
+    return null;
+}
+```
+
+---
+
+## 二、数据库清理
+
+### 2.1 清理目标
+
+为构建清晰的树状族谱结构，删除了孤立人员和复杂关系人员。
+
+### 2.2 保留结构
+
+| 代 | 人数 | 说明 |
+|----|------|------|
+| 第1代 | 2人 | 张守义 + 张王氏 |
+| 第2代 | 5人 | 张文博/张李氏、张文强/张刘氏、张文秀 |
+| 第3代 | 12人 | 张建华/赵淑芳、张建國、张建平/陈玉兰等 |
+| 第4代 | 10人 | 张志强/王小丽、张伟/张陈氏等 |
+| 第5代 | 1人 | 张晨曦 |
+
+### 2.3 SQL 清理脚本
+
+```sql
+-- 删除孤立人员和复杂关系人员
+DELETE FROM t_member WHERE id IN (35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49);
+DELETE FROM t_member WHERE id IN (8, 19, 21, 23);
+
+-- 修复第4代人员关系
+UPDATE t_member SET mother_id = NULL WHERE id IN (29, 31);
+
+-- 添加第5代
+INSERT INTO t_member (family_id, name, gender, birth_date, birth_place, generation, spouse_name, father_id, mother_id, status, created_by)
+VALUES (1, '张晨曦', 'MALE', '2020-01-05', '河北保定', 5, NULL, 24, 25, 'ALIVE', 1);
+```
+
+---
+
+## 三、前端组件修复
+
+### 3.1 组件名称问题
+
+**问题**：组件 `GenealogyNode.vue` 导出名称与类型 `GenealogyNode` 冲突
+
+**修复**：将组件导入重命名为 `GenealogyNodeCard`
+
+```javascript
+// 修复前
+import GenealogyNode from './components/GenealogyNode.vue'
+import type { GenealogyNode } from '@/api/genealogy'
+
+// 修复后
+import GenealogyNodeCard from './components/GenealogyNode.vue'
+import type { GenealogyNode } from '@/api/genealogy'
+```
+
+**文件**：`frontend/src/views/genealogy/GenealogyTreeView.vue`
+
+### 3.2 el-radio 废弃警告
+
+**问题**：`label` 作为 value 使用在 Element Plus 3.0 将被废弃
+
+**修复**：使用 `value` 替代 `label`
+
+```vue
+<!-- 修复前 -->
+<el-radio-button label="">全部</el-radio-button>
+<el-radio-button label="ALIVE">在世</el-radio-button>
+
+<!-- 修复后 -->
+<el-radio-button value="">全部</el-radio-button>
+<el-radio-button value="ALIVE">在世</el-radio-button>
+```
+
+**文件**：`frontend/src/views/genealogy/components/FilterPanel.vue`
+
+---
+
+## 四、树状结构优化
+
+### 4.1 连接线结构
+
+**目标**：
+- 同辈之间不需要横向连接线
+- 夫妻节点与每个子女之间有纵向连接线
+- 每层之间用虚线分隔不同辈分
+
+### 4.2 CSS 结构
+
+```css
+/* 同辈之间无连接线 - 移除了 .children-nodes::before */
+
+/* 每层辈分虚线 */
+.children-wrapper {
+  padding-top: 40px;
+}
+
+.children-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #667eea 0,
+    #667eea 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.5;
+}
+
+/* 每个子节点的独立纵向连接线 */
+.child-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.child-branch::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  transform: translateX(-50%);
+}
+```
+
+**文件**：`frontend/src/views/genealogy/components/GenealogyNode.vue`
+
+---
+
+## 五、画布定位优化
+
+### 5.1 问题
+
+- 族谱初始状态在画布中央，而非屏幕中央
+- 画布可能不在页面正中央，导致视觉偏差
+
+### 5.2 解决方案
+
+```javascript
+const initializeCanvasPosition = () => {
+  const rect = canvasRef.value.getBoundingClientRect()
+
+  // 视口尺寸
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  // 视口中央位置
+  const viewportCenterX = viewportWidth / 2
+  const viewportCenterY = viewportHeight / 2
+
+  // 画布在视口中的位置
+  const canvasLeft = rect.left
+  const canvasTop = rect.top
+
+  // 根节点应该在视口中央，稍微偏移以达到视觉居中
+  const rootNodeWidth = 380
+  canvasPosition.x = viewportCenterX - canvasLeft - rootNodeWidth / 2 - 260
+  canvasPosition.y = viewportCenterY - canvasTop - 80
+
+  // 初始缩放设为 30%
+  const { scale } = calculateCanvasInit(treeData.value, rect.width, rect.height)
+  zoom.value = Math.min(scale, 0.3)
+}
+```
+
+**关键修复**：
+- 使用 `getBoundingClientRect()` 获取画布相对于屏幕的位置
+- 以视口（屏幕）中央为参考点
+- 微调偏移量使族谱视觉居中
+
+**文件**：`frontend/src/views/genealogy/GenealogyTreeView.vue`
+
+### 5.3 CSS 关键属性
+
+```css
+.canvas-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;  /* 以左上角为原点 */
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+```
+
+---
+
+## 六、缩放交互优化
+
+### 6.1 问题
+
+- 原缩放逻辑只是简单加减缩放值
+- 缩放以画布原点(0,0)为基准，而非鼠标位置
+
+### 6.2 解决方案
+
+```javascript
+const handleCanvasWheel = (e: WheelEvent) => {
+  e.preventDefault()
+
+  if (!canvasRef.value) return
+
+  const rect = canvasRef.value.getBoundingClientRect()
+  const mouseX = e.clientX - rect.left
+  const mouseY = e.clientY - rect.top
+
+  // 计算鼠标位置在缩放前的画布坐标
+  const canvasXBeforeZoom = (mouseX - canvasPosition.x) / zoom.value
+  const canvasYBeforeZoom = (mouseY - canvasPosition.y) / zoom.value
+
+  // 计算新的缩放值
+  const delta = e.deltaY > 0 ? -0.1 : 0.1
+  const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom.value + delta))
+
+  // 缩放后，调整 canvasPosition 使鼠标位置保持不变
+  canvasPosition.x = mouseX - canvasXBeforeZoom * newZoom
+  canvasPosition.y = mouseY - canvasYBeforeZoom * newZoom
+  zoom.value = newZoom
+}
+```
+
+**实现效果**：
+- 缩放以鼠标悬停位置为中心
+- 缩放时鼠标指向的画布坐标保持不变
+- 用户可以聚焦查看族谱的任意位置
+
+**文件**：`frontend/src/views/genealogy/GenealogyTreeView.vue`
+
+---
+
+## 七、优化效果
+
+| 功能 | 优化前 | 优化后 |
+|------|--------|--------|
+| 夫妻节点 | 无法正确组合 | 正确显示夫妻节点 |
+| 连接线 | 同辈之间有横向连接 | 仅显示纵向父子连接 |
+| 辈分分隔 | 无明显分隔 | 每层有虚线分隔 |
+| 画布居中 | 以画布中央为准 | 以屏幕中央为准 |
+| 初始缩放 | 自动计算 | 固定 30% |
+| 缩放交互 | 以画布原点为中心 | 以鼠标位置为中心 |
+
+---
+
+## 八、相关文件清单
+
+### 后端
+- `backend/src/main/java/com/family/genealogy/service/GenealogyService.java`
+
+### 前端
+- `frontend/src/views/genealogy/GenealogyTreeView.vue`
+- `frontend/src/views/genealogy/components/GenealogyNode.vue`
+- `frontend/src/views/genealogy/components/FilterPanel.vue`
+- `frontend/src/utils/genealogy.ts`
+
+### 数据库
+- `db/fix_genealogy_tree.sql`

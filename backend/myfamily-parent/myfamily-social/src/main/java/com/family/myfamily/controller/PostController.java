@@ -6,6 +6,7 @@ import com.family.myfamily.dto.PostDTO;
 import com.family.myfamily.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +18,19 @@ public class PostController {
 
     private final PostService postService;
 
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
+            return (Long) authentication.getPrincipal();
+        }
+        return null;
+    }
+
     @GetMapping("/{id}")
     public Result<PostDTO> getPostById(@PathVariable Long id) {
         postService.incrementViewCount(id);
-        PostDTO post = postService.getPostById(id);
+        PostDTO post = postService.getPostById(id, getCurrentUserId());
         return Result.success(post);
     }
 
@@ -30,7 +40,7 @@ public class PostController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "20") int size) {
-        Page<PostDTO> list = postService.getPostPage(familyId, type, page, size);
+        Page<PostDTO> list = postService.getPostPage(familyId, type, page, size, getCurrentUserId());
         return Result.success(list);
     }
 
@@ -53,8 +63,16 @@ public class PostController {
     }
 
     @PostMapping("/{id}/like")
-    public Result<Void> likePost(@PathVariable Long id) {
-        postService.incrementLikeCount(id);
+    public Result<Void> likePost(@PathVariable Long id, Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        postService.likePost(id, userId);
         return Result.success("点赞成功", null);
+    }
+
+    @DeleteMapping("/{id}/like")
+    public Result<Void> unlikePost(@PathVariable Long id, Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        postService.unlikePost(id, userId);
+        return Result.success("取消点赞成功", null);
     }
 }

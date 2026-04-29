@@ -28,9 +28,14 @@ public class Member {
 
     private Long motherId;
 
+    private Long spouseId;
+
     private String spouseName;
 
     private Integer status;
+
+    @TableField
+    private Boolean isVirtual;
 
     private Long createdBy;
 

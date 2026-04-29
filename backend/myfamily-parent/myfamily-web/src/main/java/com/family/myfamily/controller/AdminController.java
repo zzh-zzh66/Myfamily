@@ -23,7 +23,7 @@ public class AdminController {
     @GetMapping("/posts/pending")
     @PreAuthorize("hasRole('ADMIN')")
     public Result<List<PostDTO>> getPendingPosts() {
-        List<PostDTO> list = postService.getPostList(null, null);
+        List<PostDTO> list = postService.getPendingPosts();
         return Result.success(list);
     }
 

@@ -41,7 +41,7 @@ request.interceptors.response.use(
     const res = response.data
 
     // 根据业务码处理
-    if (res.code === 200 || res.code === 0) {
+    if (res.code === 200 || res.code === 201 || res.code === 0) {
       return response.data
     }
 

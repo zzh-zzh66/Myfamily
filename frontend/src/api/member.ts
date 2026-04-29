@@ -28,6 +28,10 @@ export function deleteMember(id: number) {
   return request.delete<ApiResponse<null>>(`/members/${id}`)
 }
 
+export function clearSpouseRelation(id: number) {
+  return request.delete<ApiResponse<null>>(`/members/${id}/spouse`)
+}
+
 export function getGenealogyTree(familyId?: number) {
   return request.get<ApiResponse<Member[]>>('/members/genealogy/tree', {
     params: { familyId }
@@ -40,6 +44,10 @@ export function getMemberChildren(id: number) {
 
 export function getMemberSpouse(id: number) {
   return request.get<ApiResponse<Member>>(`/members/${id}/spouse`)
+}
+
+export function getSingleChildren(fatherId: number) {
+  return request.get<ApiResponse<Member[]>>(`/members/single-children/${fatherId}`)
 }
 
 export function uploadMemberAvatar(id: number, file: File) {

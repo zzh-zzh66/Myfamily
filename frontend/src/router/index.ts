@@ -85,6 +85,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '纪念堂', requiresAuth: true }
   },
   {
+    path: '/admin/posts',
+    name: 'PostReview',
+    component: () => import('@/views/admin/PostReviewView.vue'),
+    meta: { title: '动态审核', requiresAuth: true, requiresAdmin: true }
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/profile/ProfileView.vue'),
@@ -107,10 +113,13 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
 
   if (requiresAuth && !userStore.isLoggedIn) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
   } else if ((to.name === 'Login' || to.name === 'Register') && userStore.isLoggedIn) {
+    next({ name: 'Genealogy' })
+  } else if (requiresAdmin && !userStore.isAdmin) {
     next({ name: 'Genealogy' })
   } else {
     next()
