@@ -307,17 +307,34 @@ export function drawTree(
     onNodeClick?: (memberId: number) => void
     onNodeDbClick?: (memberId: number) => void
     selectedId?: number | null
+    filteredIds?: Set<number>
+    isFilterActive?: boolean
   }
 ) {
   coupleNodesMap.forEach((coupleNodes) => {
     coupleNodes.forEach(coupleNode => {
       const nodeLayout = layout.nodes.get(coupleNode.id)
       if (nodeLayout) {
-        const isSelected = options.selectedId !== undefined && options.selectedId !== null && (
+        const isSelected = Boolean(options.selectedId !== undefined && options.selectedId !== null && (
           (coupleNode.male && coupleNode.male.id === options.selectedId) ||
           (coupleNode.female && coupleNode.female.id === options.selectedId)
-        )
-        drawCoupleNode(ctx, coupleNode, nodeLayout, isSelected)
+        ))
+
+        let isHighlighted: boolean = false
+        let isDimmed: boolean = false
+
+        if (options.isFilterActive && options.filteredIds) {
+          const maleId = coupleNode.male?.id
+          const femaleId = coupleNode.female?.id
+          const hasMatchingMember = Boolean(
+            (maleId && options.filteredIds.has(maleId)) ||
+            (femaleId && options.filteredIds.has(femaleId))
+          )
+          isHighlighted = hasMatchingMember
+          isDimmed = !hasMatchingMember
+        }
+
+        drawCoupleNode(ctx, coupleNode, nodeLayout, isSelected, isHighlighted, isDimmed)
       }
     })
   })
@@ -327,24 +344,43 @@ export function drawCoupleNode(
   ctx: CanvasRenderingContext2D,
   coupleNode: CoupleNode,
   layout: NodeLayout,
-  isSelected: boolean
+  isSelected: boolean,
+  isHighlighted: boolean = false,
+  isDimmed: boolean = false
 ) {
   const { x, y, width, height } = layout
 
   ctx.save()
 
+  if (isDimmed) {
+    ctx.globalAlpha = 0.2
+  }
+
   const gradient = ctx.createLinearGradient(x, y, x + width, y + height)
 
-  if (coupleNode.isCouple) {
+  if (isHighlighted) {
+    gradient.addColorStop(0, '#FFD700')
+    gradient.addColorStop(1, '#FFA500')
+  } else if (coupleNode.isCouple) {
     gradient.addColorStop(0, '#5D4E37')
     gradient.addColorStop(1, '#4A3E2B')
   } else {
     if (coupleNode.male) {
-      gradient.addColorStop(0, '#3D5A80')
-      gradient.addColorStop(1, '#2D4A70')
+      if (isDimmed) {
+        gradient.addColorStop(0, '#666666')
+        gradient.addColorStop(1, '#555555')
+      } else {
+        gradient.addColorStop(0, '#3D5A80')
+        gradient.addColorStop(1, '#2D4A70')
+      }
     } else if (coupleNode.female) {
-      gradient.addColorStop(0, '#8B4A4A')
-      gradient.addColorStop(1, '#7A3D3D')
+      if (isDimmed) {
+        gradient.addColorStop(0, '#666666')
+        gradient.addColorStop(1, '#555555')
+      } else {
+        gradient.addColorStop(0, '#8B4A4A')
+        gradient.addColorStop(1, '#7A3D3D')
+      }
     } else {
       gradient.addColorStop(0, '#666666')
       gradient.addColorStop(1, '#555555')
@@ -365,65 +401,69 @@ export function drawCoupleNode(
   ctx.closePath()
 
   ctx.fillStyle = gradient
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
-  ctx.shadowBlur = 6
-  ctx.shadowOffsetY = 3
+  if (isHighlighted) {
+    ctx.shadowColor = '#FFD700'
+    ctx.shadowBlur = 15
+    ctx.shadowOffsetY = 0
+  } else {
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+    ctx.shadowBlur = 6
+    ctx.shadowOffsetY = 3
+  }
   ctx.fill()
   ctx.shadowColor = 'transparent'
+  ctx.shadowBlur = 0
 
   if (isSelected) {
     ctx.strokeStyle = '#C9A962'
     ctx.lineWidth = 3
+    ctx.stroke()
+  } else if (isHighlighted) {
+    ctx.strokeStyle = '#FF4500'
+    ctx.lineWidth = 2
     ctx.stroke()
   }
 
   ctx.beginPath()
   ctx.moveTo(x + radius * 2, y + 2)
   ctx.lineTo(x + width - radius * 2, y + 2)
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+  ctx.strokeStyle = isHighlighted ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'
   ctx.lineWidth = 1
   ctx.stroke()
+
+  ctx.font = isHighlighted ? 'bold 11px "Noto Sans SC", sans-serif' : 'bold 10px "Noto Sans SC", sans-serif'
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = isHighlighted ? '#FFFFFF' : '#C9A962'
+
+  const genText = `第${coupleNode.generation}代`
+  ctx.fillText(genText, x + 6, y + 12)
 
   if (coupleNode.isCouple && coupleNode.male && coupleNode.female) {
     const leftNameX = x + 50
     const rightNameX = x + width - 50
     const nameY = y + height / 2
 
-    ctx.fillStyle = '#FFFFFF'
-    ctx.font = 'bold 12px "Noto Serif SC", serif'
+    ctx.fillStyle = isDimmed ? '#AAAAAA' : '#FFFFFF'
+    ctx.font = isHighlighted ? 'bold 13px "Noto Serif SC", serif' : 'bold 12px "Noto Serif SC", serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(coupleNode.male.name, leftNameX, nameY)
 
     ctx.fillText(coupleNode.female.name, rightNameX, nameY)
 
-    ctx.fillStyle = '#FF6B6B'
+    ctx.fillStyle = isDimmed ? '#888888' : '#FF6B6B'
     ctx.font = '16px serif'
     ctx.fillText('♥', x + width / 2, nameY)
-
-    ctx.fillStyle = '#C9A962'
-    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(`第${coupleNode.generation}代`, x + 6, y + 12)
   } else if (coupleNode.male) {
-    ctx.fillStyle = '#C9A962'
-    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(`第${coupleNode.male.generation}代`, x + 6, y + 12)
-
-    ctx.fillStyle = '#FFFFFF'
-    ctx.font = 'bold 14px "Noto Serif SC", serif'
+    ctx.fillStyle = isDimmed ? '#AAAAAA' : '#FFFFFF'
+    ctx.font = isHighlighted ? 'bold 15px "Noto Serif SC", serif' : 'bold 14px "Noto Serif SC", serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(coupleNode.male.name, x + width / 2, y + height / 2 + 5)
   } else if (coupleNode.female) {
-    ctx.fillStyle = '#C9A962'
-    ctx.font = 'bold 10px "Noto Sans SC", sans-serif'
-    ctx.textAlign = 'left'
-    ctx.fillText(`第${coupleNode.female.generation}代`, x + 6, y + 12)
-
-    ctx.fillStyle = '#FFFFFF'
-    ctx.font = 'bold 14px "Noto Serif SC", serif'
+    ctx.fillStyle = isDimmed ? '#AAAAAA' : '#FFFFFF'
+    ctx.font = isHighlighted ? 'bold 15px "Noto Serif SC", serif' : 'bold 14px "Noto Serif SC", serif'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(coupleNode.female.name, x + width / 2, y + height / 2 + 5)

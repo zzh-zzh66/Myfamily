@@ -64,6 +64,111 @@
               </el-button>
             </div>
             <div class="toolbar-right">
+              <el-popover
+                placement="bottom-end"
+                :width="400"
+                trigger="click"
+                v-model:visible="filterPopoverVisible"
+              >
+                <template #reference>
+                  <el-button :type="genealogyStore.isFilterActive ? 'primary' : 'default'">
+                    <el-icon><Filter /></el-icon>
+                    筛选
+                    <el-badge
+                      v-if="genealogyStore.filteredMemberIds.size > 0"
+                      :value="genealogyStore.filteredMemberIds.size"
+                      :max="99"
+                      class="filter-badge"
+                    />
+                  </el-button>
+                </template>
+                <div class="filter-panel">
+                  <div class="filter-header">
+                    <span class="filter-title">筛选条件</span>
+                    <el-button link type="primary" @click="handleClearFilter">清除筛选</el-button>
+                  </div>
+
+                  <div class="filter-form">
+                    <div class="filter-item">
+                      <label class="filter-label">姓名</label>
+                      <el-autocomplete
+                        v-model="filterForm.name"
+                        :fetch-suggestions="handleNameSearch"
+                        placeholder="输入姓名搜索"
+                        clearable
+                        class="filter-input"
+                        @select="handleNameSelect"
+                        @input="handleNameInput"
+                      >
+                        <template #default="{ item }">
+                          <div class="name-suggestion">
+                            <span class="suggestion-name">{{ item.name }}</span>
+                            <span class="suggestion-info">第{{ item.generation }}代 · {{ item.gender === 'male' ? '男' : '女' }}</span>
+                          </div>
+                        </template>
+                      </el-autocomplete>
+                    </div>
+
+                    <div class="filter-item">
+                      <label class="filter-label">辈分</label>
+                      <el-select
+                        v-model="filterForm.generations"
+                        multiple
+                        placeholder="选择辈分"
+                        clearable
+                        class="filter-input"
+                      >
+                        <el-option
+                          v-for="gen in availableGenerations"
+                          :key="gen"
+                          :label="`第${gen}代`"
+                          :value="gen"
+                        />
+                      </el-select>
+                    </div>
+
+                    <div class="filter-item">
+                      <label class="filter-label">性别</label>
+                      <el-radio-group v-model="filterForm.gender" class="filter-radio-group">
+                        <el-radio-button value="">全部</el-radio-button>
+                        <el-radio-button value="male">男</el-radio-button>
+                        <el-radio-button value="female">女</el-radio-button>
+                      </el-radio-group>
+                    </div>
+
+                    <div class="filter-item">
+                      <label class="filter-label">婚姻状态</label>
+                      <el-radio-group v-model="filterForm.isMarried" class="filter-radio-group">
+                        <el-radio-button :value="undefined">全部</el-radio-button>
+                        <el-radio-button :value="true">已婚</el-radio-button>
+                        <el-radio-button :value="false">未婚</el-radio-button>
+                      </el-radio-group>
+                    </div>
+
+                    <div class="filter-item">
+                      <label class="filter-label">在世状态</label>
+                      <el-radio-group v-model="filterForm.isAlive" class="filter-radio-group">
+                        <el-radio-button :value="undefined">全部</el-radio-button>
+                        <el-radio-button :value="true">在世</el-radio-button>
+                        <el-radio-button :value="false">已故</el-radio-button>
+                      </el-radio-group>
+                    </div>
+                  </div>
+
+                  <div class="filter-footer">
+                    <div class="filter-stat">
+                      <span v-if="genealogyStore.isFilterActive">
+                        匹配 <strong>{{ genealogyStore.filteredMemberIds.size }}</strong> 人
+                      </span>
+                      <span v-else class="filter-hint">
+                        设置筛选条件后点击"应用筛选"
+                      </span>
+                    </div>
+                    <el-button type="primary" @click="handleApplyFilter">应用筛选</el-button>
+                  </div>
+                </div>
+              </el-popover>
+
               <el-button-group>
                 <el-button @click="handleZoomOut" :icon="ZoomOut" />
                 <el-button class="zoom-level">{{ Math.round(scale * 100) }}%</el-button>
@@ -93,6 +198,8 @@
                 :offset-x="offsetX"
                 :offset-y="offsetY"
                 :selected-id="genealogyStore.selectedMemberId"
+                :filtered-ids="genealogyStore.filteredMemberIds"
+                :is-filter-active="genealogyStore.isFilterActive"
                 @node-click="handleNodeClick"
                 @node-dbclick="handleNodeDbClick"
               />
@@ -119,9 +226,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import { useGenealogyStore } from '@/stores/genealogy'
 import GenealogyCanvas from '@/components/genealogy/GenealogyCanvas.vue'
@@ -135,8 +242,19 @@ import {
   ZoomIn,
   ZoomOut,
   FullScreen,
-  ArrowDown
+  ArrowDown,
+  Filter
 } from '@element-plus/icons-vue'
+
+import type { Member } from '@/types/api'
+
+interface FilterFormData {
+  name: string
+  generations: number[]
+  gender: 'male' | 'female' | ''
+  isMarried: boolean | undefined
+  isAlive: boolean | undefined
+}
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -151,7 +269,72 @@ const isDragging = ref(false)
 const startX = ref(0)
 const startY = ref(0)
 
+const filterPopoverVisible = ref(false)
+const filterForm = reactive<FilterFormData>({
+  name: '',
+  generations: [],
+  gender: '',
+  isMarried: undefined,
+  isAlive: undefined
+})
+
 const isAdmin = computed(() => userStore.userInfo?.role?.toUpperCase() === 'ADMIN')
+
+const availableGenerations = computed(() => {
+  const gens = new Set<number>()
+  genealogyStore.flatMembers.forEach(m => {
+    if (m.generation) gens.add(m.generation)
+  })
+  return Array.from(gens).sort((a, b) => a - b)
+})
+
+async function handleNameSearch(query: string, callback: (results: Member[]) => void) {
+  await nextTick()
+  const results = genealogyStore.searchMembersByName(query)
+  callback(results as Member[])
+}
+
+function handleNameSelect(item: any) {
+  genealogyStore.selectMember(item.id)
+  filterPopoverVisible.value = false
+}
+
+function handleNameInput(value: any) {
+  if (!value) {
+    handleLiveFilter()
+  }
+}
+
+function handleLiveFilter() {
+  const params: FilterFormData = { ...filterForm }
+  const hasConditions = params.name || params.generations.length > 0 || params.gender || params.isMarried !== undefined || params.isAlive !== undefined
+
+  if (hasConditions) {
+    genealogyStore.applyFilter({
+      name: params.name || undefined,
+      generations: params.generations.length > 0 ? params.generations : undefined,
+      gender: params.gender || undefined,
+      isMarried: params.isMarried,
+      isAlive: params.isAlive
+    })
+  } else {
+    genealogyStore.clearFilter()
+  }
+}
+
+function handleApplyFilter() {
+  handleLiveFilter()
+  filterPopoverVisible.value = false
+}
+
+function handleClearFilter() {
+  filterForm.name = ''
+  filterForm.generations = []
+  filterForm.gender = ''
+  filterForm.isMarried = undefined
+  filterForm.isAlive = undefined
+  genealogyStore.clearFilter()
+}
 
 const CANVAS_CENTER_X = 500
 const CANVAS_CENTER_Y = 100
@@ -475,5 +658,89 @@ onMounted(() => {
 .empty-state {
   @include flex-center;
   height: 100%;
+}
+
+.filter-panel {
+  .filter-header {
+    @include flex-between;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $color-border-light;
+
+    .filter-title {
+      font-weight: 600;
+      color: $color-text-primary;
+    }
+  }
+
+  .filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    .filter-label {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+    }
+
+    .filter-input {
+      width: 100%;
+    }
+
+    .filter-radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-xs;
+    }
+  }
+
+  .filter-footer {
+    @include flex-between;
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid $color-border-light;
+
+    .filter-stat {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+
+      strong {
+        color: $color-primary;
+        font-size: $font-size-lg;
+      }
+
+      .filter-hint {
+        font-size: $font-size-xs;
+        color: $color-text-placeholder;
+      }
+    }
+  }
+}
+
+.name-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-xs 0;
+
+  .suggestion-name {
+    font-weight: 500;
+    color: $color-text-primary;
+  }
+
+  .suggestion-info {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+}
+
+:deep(.filter-badge) {
+  margin-left: $spacing-xs;
 }
 </style>

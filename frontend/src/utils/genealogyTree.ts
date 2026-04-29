@@ -1,6 +1,6 @@
 import type { Member, GenealogyNode, CoupleNode } from '@/types/api'
 
-function normalizeGender(gender: string): 'male' | 'female' {
+export function normalizeGender(gender: string): 'male' | 'female' {
   if (!gender) return 'male'
   const g = gender.toLowerCase()
   if (g === 'male' || g === 'm') return 'male'

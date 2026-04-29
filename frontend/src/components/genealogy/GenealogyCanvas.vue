@@ -26,6 +26,8 @@ const props = defineProps<{
   offsetX?: number
   offsetY?: number
   selectedId?: number | null
+  filteredIds?: Set<number>
+  isFilterActive?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -73,7 +75,9 @@ function render() {
     drawTree(ctx, layout.value, props.coupleNodesMap, {
       onNodeClick: (memberId) => emit('node-click', memberId),
       onNodeDbClick: (memberId) => emit('node-dbclick', memberId),
-      selectedId: props.selectedId
+      selectedId: props.selectedId,
+      filteredIds: props.filteredIds,
+      isFilterActive: props.isFilterActive
     })
   }
 
@@ -92,6 +96,8 @@ watch(() => props.scale, render)
 watch(() => props.offsetX, render)
 watch(() => props.offsetY, render)
 watch(() => props.selectedId, render)
+watch(() => props.filteredIds, render, { deep: true })
+watch(() => props.isFilterActive, render)
 
 function handleCanvasClick(e: MouseEvent) {
   if (!layout.value || !canvasRef.value) return
