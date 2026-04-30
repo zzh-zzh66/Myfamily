@@ -8,9 +8,11 @@ import com.family.myfamily.dto.UserDTO;
 import com.family.myfamily.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -37,5 +39,11 @@ public class AuthController {
         UserDTO dto = new UserDTO();
         org.springframework.beans.BeanUtils.copyProperties(user, dto);
         return Result.success(dto);
+    }
+
+    @PostMapping("/logout")
+    public Result<Void> logout(Authentication authentication) {
+        log.info("用户退出登录: userId={}", authentication.getPrincipal());
+        return Result.success("退出成功", null);
     }
 }

@@ -85,6 +85,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '纪念堂', requiresAuth: true }
   },
   {
+    path: '/memorial/:id',
+    name: 'MemorialDetail',
+    component: () => import('@/views/memorial/MemorialDetailView.vue'),
+    meta: { title: '纪念人物详情', requiresAuth: true }
+  },
+  {
     path: '/admin/posts',
     name: 'PostReview',
     component: () => import('@/views/admin/PostReviewView.vue'),

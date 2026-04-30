@@ -2,6 +2,7 @@ package com.family.myfamily.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -35,4 +36,16 @@ public class Memorial {
 
     @TableLogic
     private Integer deleted;
+
+    @TableField(exist = false)
+    private String name;
+
+    @TableField(exist = false)
+    private LocalDate birthDate;
+
+    @TableField(exist = false)
+    private LocalDate deathDate;
+
+    @TableField(exist = false)
+    private String avatar;
 }

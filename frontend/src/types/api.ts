@@ -139,14 +139,18 @@ export interface Post {
 // 纪念堂相关类型
 export interface Memorial {
   id: number
+  familyId?: number
   memberId: number
-  name: string
-  birthYear: string
-  deathYear: string
-  avatar?: string
+  name?: string
+  birthDate?: string
+  deathDate?: string
+  gender?: string
   title: string
-  biography?: string
-  createdAt: string
+  bio?: string
+  photoUrl?: string
+  achievement?: string[]
+  avatar?: string
+  createdAt?: string
   updatedAt?: string
 }
 
