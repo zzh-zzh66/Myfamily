@@ -1,206 +1,334 @@
-[GenealogyTree] Created singleNode: single-1 {
-  "name": "李守仁",
-  "generation": 1
-}
-genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 2-12 {
-  "male": "李文博",
-  "female": "王桂兰",
-  "generation": 2
-}
-genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-3 {
-  "name": "李文秀",
-  "generation": 2
-}
-genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 4-13 {
-  "male": "李建华",
-  "female": "张秀英",
-  "generation": 3
-}
-genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 5-14 {
-  "male": "李建军",
-  "female": "陈凤英",
-  "generation": 3
-}
-genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-6 {
-  "name": "李建芳",
-  "generation": 3
-}
-genealogyTree.ts:11 [GenealogyTree] Created coupleNode: 7-15 {
-  "male": "李志强",
-  "female": "刘雅琴",
-  "generation": 4
-}
-genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-8 {
-  "name": "李晓燕",
-  "generation": 4
-}
-genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-9 {
-  "name": "李志远",
-  "generation": 4
-}
-genealogyTree.ts:11 [GenealogyTree] Created singleNode: single-10 {
-  "name": "李思琪",
-  "generation": 5
-}
-genealogyTree.ts:11 [GenealogyTree] === Assigning children === 
-genealogyTree.ts:11 [GenealogyTree] Processing generation 1 
-genealogyTree.ts:11 [GenealogyTree]   Node single-1 (male=李守仁) children: 2-12, single-3 {
-  "childMembers": [
-    {
-      "id": 2,
-      "name": "李文博",
-      "gen": 2
-    },
-    {
-      "id": 3,
-      "name": "李文秀",
-      "gen": 2
-    }
-  ]
-}
-genealogyTree.ts:11 [GenealogyTree] Processing generation 2 
-genealogyTree.ts:11 [GenealogyTree]   Node 2-12 (male=李文博) children: 4-13, 5-14, single-6 {
-  "childMembers": [
-    {
-      "id": 4,
-      "name": "李建华",
-      "gen": 3
-    },
-    {
-      "id": 5,
-      "name": "李建军",
-      "gen": 3
-    },
-    {
-      "id": 6,
-      "name": "李建芳",
-      "gen": 3
-    }
-  ]
-}
-genealogyTree.ts:11 [GenealogyTree]   Node single-3 (female=李文秀) children: none {
-  "childMembers": []
-}
-genealogyTree.ts:11 [GenealogyTree] Processing generation 3 
-genealogyTree.ts:11 [GenealogyTree]   Node 4-13 (male=李建华) children: 7-15, single-8 {
-  "childMembers": [
-    {
-      "id": 7,
-      "name": "李志强",
-      "gen": 4
-    },
-    {
-      "id": 8,
-      "name": "李晓燕",
-      "gen": 4
-    }
-  ]
-}
-genealogyTree.ts:11 [GenealogyTree]   Node 5-14 (male=李建军) children: single-9 {
-  "childMembers": [
-    {
-      "id": 9,
-      "name": "李志远",
-      "gen": 4
-    }
-  ]
-}
-genealogyTree.ts:11 [GenealogyTree]   Node single-6 (female=李建芳) children: none {
-  "childMembers": []
-}
-genealogyTree.ts:11 [GenealogyTree] Processing generation 4 
-genealogyTree.ts:11 [GenealogyTree]   Node 7-15 (male=李志强) children: single-10 {
-  "childMembers": [
-    {
-      "id": 10,
-      "name": "李思琪",
-      "gen": 5
-    }
-  ]
-}
-genealogyTree.ts:11 [GenealogyTree]   Node single-8 (female=李晓燕) children: none {
-  "childMembers": []
-}
-genealogyTree.ts:11 [GenealogyTree]   Node single-9 (male=李志远) children: none {
-  "childMembers": []
-}
-genealogyTree.ts:11 [GenealogyTree] Processing generation 5 
-genealogyTree.ts:11 [GenealogyTree]   Node single-10 (female=李思琪) children: none {
-  "childMembers": []
-}
-genealogyTree.ts:11 [GenealogyTree] === Final coupleNodesMap === 
-genealogyTree.ts:11 [GenealogyTree] Generation 1: [
-  {
-    "id": "single-1",
-    "isCouple": false,
-    "children": [
-      "2-12",
-      "single-3"
-    ]
-  }
-]
-genealogyTree.ts:11 [GenealogyTree] Generation 2: [
-  {
-    "id": "2-12",
-    "isCouple": true,
-    "children": [
-      "4-13",
-      "5-14",
-      "single-6"
-    ]
-  },
-  {
-    "id": "single-3",
-    "isCouple": false,
-    "children": []
-  }
-]
-genealogyTree.ts:11 [GenealogyTree] Generation 3: [
-  {
-    "id": "4-13",
-    "isCouple": true,
-    "children": [
-      "7-15",
-      "single-8"
-    ]
-  },
-  {
-    "id": "5-14",
-    "isCouple": true,
-    "children": [
-      "single-9"
-    ]
-  },
-  {
-    "id": "single-6",
-    "isCouple": false,
-    "children": []
-  }
-]
-genealogyTree.ts:11 [GenealogyTree] Generation 4: [
-  {
-    "id": "7-15",
-    "isCouple": true,
-    "children": [
-      "single-10"
-    ]
-  },
-  {
-    "id": "single-8",
-    "isCouple": false,
-    "children": []
-  },
-  {
-    "id": "single-9",
-    "isCouple": false,
-    "children": []
-  }
-]
-genealogyTree.ts:11 [GenealogyTree] Generation 5: [
-  {
-    "id": "single-10",
-    "isCouple": false,
-    "children": []
-  }
-]
-content_main.js:4403 This page uses Chrome's Built-In AI features (LanguageDetector)! We're always improving our models; please submit your feedback here: https://issues.chromium.org/issues/new?component=1583316
+D:\dev\configs\java\bin\java.exe -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true "-Dmanagement.endpoints.jmx.exposure.include=*" "-javaagent:D:\intellij_download\intellij-using\IntelliJ IDEA 2024.1.4\lib\idea_rt.jar=52347:D:\intellij_download\intellij-using\IntelliJ IDEA 2024.1.4\bin" -Dfile.encoding=GBK -Dsun.stdout.encoding=GBK -Dsun.stderr.encoding=GBK -classpath E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-web\target\classes;E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-common\target\classes;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-validation\3.2.0\spring-boot-starter-validation-3.2.0.jar;C:\dev\mvn-repo\org\apache\tomcat\embed\tomcat-embed-el\10.1.16\tomcat-embed-el-10.1.16.jar;C:\dev\mvn-repo\org\hibernate\validator\hibernate-validator\8.0.1.Final\hibernate-validator-8.0.1.Final.jar;C:\dev\mvn-repo\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\dev\mvn-repo\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\dev\mvn-repo\com\fasterxml\classmate\1.6.0\classmate-1.6.0.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus-spring-boot3-starter\3.5.5\mybatis-plus-spring-boot3-starter-3.5.5.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus\3.5.5\mybatis-plus-3.5.5.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus-core\3.5.5\mybatis-plus-core-3.5.5.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus-annotation\3.5.5\mybatis-plus-annotation-3.5.5.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus-extension\3.5.5\mybatis-plus-extension-3.5.5.jar;C:\dev\mvn-repo\org\mybatis\mybatis\3.5.15\mybatis-3.5.15.jar;C:\dev\mvn-repo\com\github\jsqlparser\jsqlparser\4.6\jsqlparser-4.6.jar;C:\dev\mvn-repo\org\mybatis\mybatis-spring\3.0.3\mybatis-spring-3.0.3.jar;C:\dev\mvn-repo\com\baomidou\mybatis-plus-spring-boot-autoconfigure\3.5.5\mybatis-plus-spring-boot-autoconfigure-3.5.5.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-autoconfigure\3.2.0\spring-boot-autoconfigure-3.2.0.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-jdbc\3.2.0\spring-boot-starter-jdbc-3.2.0.jar;C:\dev\mvn-repo\com\zaxxer\HikariCP\5.0.1\HikariCP-5.0.1.jar;C:\dev\mvn-repo\org\slf4j\slf4j-api\2.0.9\slf4j-api-2.0.9.jar;C:\dev\mvn-repo\org\springframework\spring-jdbc\6.1.1\spring-jdbc-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-tx\6.1.1\spring-tx-6.1.1.jar;C:\dev\mvn-repo\com\mysql\mysql-connector-j\8.0.33\mysql-connector-j-8.0.33.jar;C:\dev\mvn-repo\com\google\protobuf\protobuf-java\3.21.9\protobuf-java-3.21.9.jar;C:\dev\mvn-repo\io\jsonwebtoken\jjwt-api\0.12.3\jjwt-api-0.12.3.jar;C:\dev\mvn-repo\io\jsonwebtoken\jjwt-impl\0.12.3\jjwt-impl-0.12.3.jar;C:\dev\mvn-repo\io\jsonwebtoken\jjwt-jackson\0.12.3\jjwt-jackson-0.12.3.jar;C:\dev\mvn-repo\com\fasterxml\jackson\core\jackson-databind\2.15.3\jackson-databind-2.15.3.jar;C:\dev\mvn-repo\com\fasterxml\jackson\core\jackson-annotations\2.15.3\jackson-annotations-2.15.3.jar;C:\dev\mvn-repo\com\fasterxml\jackson\core\jackson-core\2.15.3\jackson-core-2.15.3.jar;C:\dev\mvn-repo\cn\hutool\hutool-all\5.8.23\hutool-all-5.8.23.jar;E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-auth\target\classes;E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-member\target\classes;E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-social\target\classes;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-web\3.2.0\spring-boot-starter-web-3.2.0.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter\3.2.0\spring-boot-starter-3.2.0.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot\3.2.0\spring-boot-3.2.0.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-logging\3.2.0\spring-boot-starter-logging-3.2.0.jar;C:\dev\mvn-repo\ch\qos\logback\logback-classic\1.4.11\logback-classic-1.4.11.jar;C:\dev\mvn-repo\ch\qos\logback\logback-core\1.4.11\logback-core-1.4.11.jar;C:\dev\mvn-repo\org\apache\logging\log4j\log4j-to-slf4j\2.21.1\log4j-to-slf4j-2.21.1.jar;C:\dev\mvn-repo\org\apache\logging\log4j\log4j-api\2.21.1\log4j-api-2.21.1.jar;C:\dev\mvn-repo\org\slf4j\jul-to-slf4j\2.0.9\jul-to-slf4j-2.0.9.jar;C:\dev\mvn-repo\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-core\6.1.1\spring-core-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-jcl\6.1.1\spring-jcl-6.1.1.jar;C:\dev\mvn-repo\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-json\3.2.0\spring-boot-starter-json-3.2.0.jar;C:\dev\mvn-repo\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.15.3\jackson-datatype-jdk8-2.15.3.jar;C:\dev\mvn-repo\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.15.3\jackson-datatype-jsr310-2.15.3.jar;C:\dev\mvn-repo\com\fasterxml\jackson\module\jackson-module-parameter-names\2.15.3\jackson-module-parameter-names-2.15.3.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-tomcat\3.2.0\spring-boot-starter-tomcat-3.2.0.jar;C:\dev\mvn-repo\org\apache\tomcat\embed\tomcat-embed-core\10.1.16\tomcat-embed-core-10.1.16.jar;C:\dev\mvn-repo\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.16\tomcat-embed-websocket-10.1.16.jar;C:\dev\mvn-repo\org\springframework\spring-web\6.1.1\spring-web-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-beans\6.1.1\spring-beans-6.1.1.jar;C:\dev\mvn-repo\io\micrometer\micrometer-observation\1.12.0\micrometer-observation-1.12.0.jar;C:\dev\mvn-repo\io\micrometer\micrometer-commons\1.12.0\micrometer-commons-1.12.0.jar;C:\dev\mvn-repo\org\springframework\spring-webmvc\6.1.1\spring-webmvc-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-context\6.1.1\spring-context-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-expression\6.1.1\spring-expression-6.1.1.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-security\3.2.0\spring-boot-starter-security-3.2.0.jar;C:\dev\mvn-repo\org\springframework\spring-aop\6.1.1\spring-aop-6.1.1.jar;C:\dev\mvn-repo\org\springframework\security\spring-security-config\6.2.0\spring-security-config-6.2.0.jar;C:\dev\mvn-repo\org\springframework\security\spring-security-core\6.2.0\spring-security-core-6.2.0.jar;C:\dev\mvn-repo\org\springframework\security\spring-security-crypto\6.2.0\spring-security-crypto-6.2.0.jar;C:\dev\mvn-repo\org\springframework\security\spring-security-web\6.2.0\spring-security-web-6.2.0.jar;C:\dev\mvn-repo\org\springframework\boot\spring-boot-starter-websocket\3.2.0\spring-boot-starter-websocket-3.2.0.jar;C:\dev\mvn-repo\org\springframework\spring-messaging\6.1.1\spring-messaging-6.1.1.jar;C:\dev\mvn-repo\org\springframework\spring-websocket\6.1.1\spring-websocket-6.1.1.jar;C:\dev\mvn-repo\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar com.family.myfamily.MyFamilyApplication
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.0)
+
+2026-04-30T19:44:51.071+08:00  INFO 16336 --- [myfamily] [           main] c.family.myfamily.MyFamilyApplication    : Starting MyFamilyApplication using Java 22.0.2 with PID 16336 (E:\MyFamily\Myfamily\backend\myfamily-parent\myfamily-web\target\classes started by 周梓华 in E:\MyFamily\Myfamily\backend)
+2026-04-30T19:44:51.075+08:00  INFO 16336 --- [myfamily] [           main] c.family.myfamily.MyFamilyApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-04-30T19:44:53.080+08:00  INFO 16336 --- [myfamily] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-30T19:44:53.096+08:00  INFO 16336 --- [myfamily] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-30T19:44:53.096+08:00  INFO 16336 --- [myfamily] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.16]
+2026-04-30T19:44:53.180+08:00  INFO 16336 --- [myfamily] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-30T19:44:53.181+08:00  INFO 16336 --- [myfamily] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2018 ms
+Logging initialized using 'class org.apache.ibatis.logging.stdout.StdOutImpl' adapter.
+Initialization Sequence datacenterId:31 workerId:19
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.5 
+2026-04-30T19:44:54.209+08:00  WARN 16336 --- [myfamily] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: 5a75d60d-f288-4702-8347-3f5cda4f75e4
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-04-30T19:44:55.140+08:00  INFO 16336 --- [myfamily] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-04-30T19:44:55.147+08:00  INFO 16336 --- [myfamily] [           main] c.family.myfamily.MyFamilyApplication    : Started MyFamilyApplication in 5.004 seconds (process running for 6.313)
+2026-04-30T19:45:06.755+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-30T19:45:06.755+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-30T19:45:06.758+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-04-30T19:45:07.181+08:00  WARN 16336 --- [myfamily] [nio-8080-exec-2] o.s.w.s.h.HandlerMappingIntrospector     : Cache miss for REQUEST dispatch to '/api/v1/members/genealogy/tree' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@686f8d0f] was not registered for synchronization because synchronization is not active
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@797bfbb4] was not registered for synchronization because synchronization is not active
+2026-04-30T19:45:07.308+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4929c50c] was not registered for synchronization because synchronization is not active
+2026-04-30T19:45:07.708+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@291e2b77
+2026-04-30T19:45:07.712+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+JDBC Connection [HikariProxyConnection@635853286 wrapping com.mysql.cj.jdbc.ConnectionImpl@291e2b77] will not be managed by Spring
+JDBC Connection [HikariProxyConnection@604692857 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,member_id,username,password,email,role,avatar,status,last_login_at,last_login_ip,created_by,created_at,updated_by,updated_at,deleted FROM t_user WHERE id=? AND deleted=0
+==>  Preparing: SELECT COUNT(*) AS total FROM t_memorial WHERE deleted = 0
+JDBC Connection [HikariProxyConnection@1643411623 wrapping com.mysql.cj.jdbc.ConnectionImpl@61bffc94] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE deleted=0 AND (deleted = ?) ORDER BY generation ASC,id ASC
+==> Parameters: 
+==> Parameters: 0(Integer)
+==> Parameters: 2(Long)
+<==    Columns: total
+<==    Columns: id, member_id, username, password, email, role, avatar, status, last_login_at, last_login_ip, created_by, created_at, updated_by, updated_at, deleted
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 4
+<==        Row: 2, 7, li_zhiqiang, $2a$10$aAsLCGciRdk/yXTu3DI6Pu0Vg6kmliJct4ux3MRX3UTUA6TgFVPaO, li_zhiqiang@email.com, MEMBER, null, 1, 2026-04-30 11:15:43, 127.0.0.1, 1, 2026-01-01 10:00:00, null, 2026-04-24 15:33:25, 0
+<==        Row: 1, 1, 李守仁, MALE, 1900-03-15, 1980-09-20, 1, null, null, null, null, 李王氏, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:32, 0
+<==      Total: 1
+<==      Total: 1
+<==        Row: 2, 1, 李文博, MALE, 1925-07-22, 2010-12-05, 2, null, 1, null, 12, 王桂兰, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@686f8d0f]
+<==        Row: 3, 1, 李文秀, FEMALE, 1928-11-08, 2015-03-18, 2, null, 1, null, null, 张德顺, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:32, 0
+<==        Row: 12, 1, 王桂兰, FEMALE, 1930-01-10, 2018-07-25, 2, null, null, null, 2, 李文博, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==        Row: 17, 1, test002, FEMALE, 1949-07-01, null, 2, null, 1, null, null, null, 1, 0, 1, 2026-04-27 20:26:54, null, 2026-04-27 20:26:54, 0
+<==        Row: 4, 1, 李建华, MALE, 1950-04-15, null, 3, null, 2, 12, 13, 张秀英, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 17:03:18, 0
+<==        Row: 5, 1, 李建军, MALE, 1952-08-30, null, 3, null, 2, 12, 14, 陈凤英, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 17:03:18, 0
+<==        Row: 6, 1, 李建芳, FEMALE, 1955-02-14, null, 3, null, 2, 12, null, 赵国安, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 17:03:18, 0
+<==        Row: 13, 1, 张秀英, FEMALE, 1952-03-28, null, 3, null, null, null, 4, 李建华, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==        Row: 14, 1, 陈凤英, FEMALE, 1954-09-15, null, 3, null, null, null, 5, 李建军, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==        Row: 18, 1, test003, MALE, null, null, 3, null, 2, null, null, test004, 1, 0, 1, 2026-04-27 20:28:16, null, 2026-04-27 20:28:16, 0
+<==        Row: 7, 1, 李志强, MALE, 1975-06-18, null, 4, null, 4, 13, 15, 刘雅琴, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==        Row: 8, 1, 李晓燕, FEMALE, 1978-09-25, null, 4, null, 4, 13, null, 周伟明, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:33, 0
+<==        Row: 9, 1, 李志远, MALE, 1980-12-10, null, 4, null, 5, 14, null, null, 1, 0, 1, 2026-01-01 10:00:00, 1, 2026-04-29 17:44:31, 0
+<==        Row: 15, 1, 刘雅琴, FEMALE, 1978-11-30, null, 4, null, null, null, 7, 李志强, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==        Row: 10, 1, 李思琪, FEMALE, 2010-05-20, null, 5, null, 7, 15, null, null, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 17:26:31, 0
+<==        Row: 16, 1, test001, MALE, 2026-04-10, null, 5, null, 9, null, null, null, 1, 0, 1, 2026-04-27 20:25:46, 1, 2026-04-29 17:06:15, 0
+<==      Total: 17
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@797bfbb4]
+==>  Preparing: SELECT id,family_id,member_id,title,bio,photo_url,achievement,created_by,created_at,updated_by,updated_at,deleted FROM t_memorial WHERE deleted=0 ORDER BY created_at DESC LIMIT ?
+==> Parameters: 10(Long)
+<==    Columns: id, family_id, member_id, title, bio, photo_url, achievement, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 4, 1, 3, 李氏好女儿, <<BLOB>>, /images/memorial/li_wenxiu.jpg, <<BLOB>>, 1, 2026-01-15 13:00:00, null, 2026-04-24 14:26:33, 0
+<==        Row: 3, 1, 12, 贤妻良母, <<BLOB>>, /images/memorial/wang_guilan.jpg, <<BLOB>>, 1, 2026-01-15 12:00:00, null, 2026-04-24 14:26:33, 0
+<==        Row: 2, 1, 2, 家族楷模, <<BLOB>>, /images/memorial/li_wenbo.jpg, <<BLOB>>, 1, 2026-01-15 11:00:00, null, 2026-04-24 14:26:33, 0
+<==        Row: 1, 1, 1, 李氏家族创始人, <<BLOB>>, /images/memorial/li_shouren.jpg, <<BLOB>>, 1, 2026-01-15 10:00:00, null, 2026-04-24 14:26:33, 0
+<==      Total: 4
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4929c50c]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70627379] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1113024419 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE id=? AND deleted=0
+==> Parameters: 3(Long)
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 3, 1, 李文秀, FEMALE, 1928-11-08, 2015-03-18, 2, null, 1, null, null, 张德顺, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:32, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@70627379]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b92ac2f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1156783517 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,member_id,avatar_url,native_place,birth_place,education,occupation,achievement,biography,contact_email,contact_phone,created_by,created_at,updated_by,updated_at,deleted FROM t_member_profile WHERE deleted=0 AND (member_id = ?)
+==> Parameters: 3(Long)
+<==    Columns: id, member_id, avatar_url, native_place, birth_place, education, occupation, achievement, biography, contact_email, contact_phone, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 3, 3, /images/avatar/li_wenxiu.jpg, 河北省沧州, 河北省沧州府, 小学, 家庭主妇, <<BLOB>>, <<BLOB>>, null, null, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:33, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@4b92ac2f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7a1cf478] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@615632064 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE id=? AND deleted=0
+==> Parameters: 12(Long)
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 12, 1, 王桂兰, FEMALE, 1930-01-10, 2018-07-25, 2, null, null, null, 2, 李文博, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7a1cf478]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1692260d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@187744147 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,member_id,avatar_url,native_place,birth_place,education,occupation,achievement,biography,contact_email,contact_phone,created_by,created_at,updated_by,updated_at,deleted FROM t_member_profile WHERE deleted=0 AND (member_id = ?)
+==> Parameters: 12(Long)
+<==    Columns: id, member_id, avatar_url, native_place, birth_place, education, occupation, achievement, biography, contact_email, contact_phone, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 9, 12, /images/avatar/wang_guilan.jpg, 河北省沧州, 河北省沧州府, 小学, 家庭主妇, <<BLOB>>, <<BLOB>>, null, null, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:33, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1692260d]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48c7803c] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1331848551 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE id=? AND deleted=0
+==> Parameters: 2(Long)
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 2, 1, 李文博, MALE, 1925-07-22, 2010-12-05, 2, null, 1, null, 12, 王桂兰, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 16:29:22, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@48c7803c]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@d0e908f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2042374002 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,member_id,avatar_url,native_place,birth_place,education,occupation,achievement,biography,contact_email,contact_phone,created_by,created_at,updated_by,updated_at,deleted FROM t_member_profile WHERE deleted=0 AND (member_id = ?)
+==> Parameters: 2(Long)
+<==    Columns: id, member_id, avatar_url, native_place, birth_place, education, occupation, achievement, biography, contact_email, contact_phone, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 2, 2, /images/avatar/li_wenbo.jpg, 河北省沧州, 河北省沧州府, 中学, 村支书, <<BLOB>>, <<BLOB>>, null, null, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:33, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@d0e908f]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1906a0e3] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@26841862 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE id=? AND deleted=0
+==> Parameters: 1(Long)
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 1, 1, 李守仁, MALE, 1900-03-15, 1980-09-20, 1, null, null, null, null, 李王氏, 1, 0, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:32, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@1906a0e3]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23709f2d] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@257765912 wrapping com.mysql.cj.jdbc.ConnectionImpl@513dd90a] will not be managed by Spring
+==>  Preparing: SELECT id,member_id,avatar_url,native_place,birth_place,education,occupation,achievement,biography,contact_email,contact_phone,created_by,created_at,updated_by,updated_at,deleted FROM t_member_profile WHERE deleted=0 AND (member_id = ?)
+==> Parameters: 1(Long)
+<==    Columns: id, member_id, avatar_url, native_place, birth_place, education, occupation, achievement, biography, contact_email, contact_phone, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 1, 1, /images/avatar/li_shouren.jpg, 山东省济南府, 山东省济南府历城县, 私塾, 农民、地主, <<BLOB>>, <<BLOB>>, null, null, 1, 2026-01-01 10:00:00, null, 2026-04-24 14:26:33, 0
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@23709f2d]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@b6405e7] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@569107828 wrapping com.mysql.cj.jdbc.ConnectionImpl@291e2b77] will not be managed by Spring
+==>  Preparing: SELECT id,family_id,name,gender,birth_date,death_date,generation,avatar,father_id,mother_id,spouse_id,spouse_name,status,is_virtual,created_by,created_at,updated_by,updated_at,deleted FROM t_member WHERE deleted=0 AND (name LIKE ? AND deleted = ?) ORDER BY generation ASC LIMIT 20
+==> Parameters: %test%(String), 0(Integer)
+<==    Columns: id, family_id, name, gender, birth_date, death_date, generation, avatar, father_id, mother_id, spouse_id, spouse_name, status, is_virtual, created_by, created_at, updated_by, updated_at, deleted
+<==        Row: 17, 1, test002, FEMALE, 1949-07-01, null, 2, null, 1, null, null, null, 1, 0, 1, 2026-04-27 20:26:54, null, 2026-04-27 20:26:54, 0
+<==        Row: 18, 1, test003, MALE, null, null, 3, null, 2, null, null, test004, 1, 0, 1, 2026-04-27 20:28:16, null, 2026-04-27 20:28:16, 0
+<==        Row: 16, 1, test001, MALE, 2026-04-10, null, 5, null, 9, null, null, null, 1, 0, 1, 2026-04-27 20:25:46, 1, 2026-04-29 17:06:15, 0
+<==      Total: 3
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@b6405e7]
+2026-04-30T19:46:50.477+08:00  INFO 16336 --- [myfamily] [nio-8080-exec-8] c.f.m.controller.MemorialController      : 纪念堂图片上传成功: /uploads/memorial/2026/04/30/293ec144-332e-4bfd-98d0-04a4f107bad9.png
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2c124978] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@2010266117 wrapping com.mysql.cj.jdbc.ConnectionImpl@291e2b77] will not be managed by Spring
+==>  Preparing: INSERT INTO t_memorial ( member_id, title, bio, photo_url, achievement, created_at, updated_at ) VALUES ( ?, ?, ?, ?, ?, ?, ? )
+==> Parameters: 16(Long), 天生神童(String), 天生神童，无所不能，财运亨通(String), /uploads/memorial/2026/04/30/293ec144-332e-4bfd-98d0-04a4f107bad9.png(String), ["出生彩票中奖100万","出生家里拆迁款到账1000万","出生就会说话"](String), 2026-04-30T19:46:52.614293800(LocalDateTime), 2026-04-30T19:46:52.615349900(LocalDateTime)
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2c124978]
+2026-04-30T19:46:52.947+08:00 ERROR 16336 --- [myfamily] [nio-8080-exec-7] c.f.m.exception.GlobalExceptionHandler   : 系统异常
+
+org.springframework.dao.DataIntegrityViolationException: 
+### Error updating database.  Cause: java.sql.SQLException: Field 'family_id' doesn't have a default value
+### The error may exist in com/family/myfamily/mapper/MemorialMapper.java (best guess)
+### The error may involve com.family.myfamily.mapper.MemorialMapper.insert-Inline
+### The error occurred while setting parameters
+### SQL: INSERT INTO t_memorial  ( member_id, title, bio, photo_url, achievement,  created_at,  updated_at )  VALUES (  ?, ?, ?, ?, ?,  ?,  ?  )
+### Cause: java.sql.SQLException: Field 'family_id' doesn't have a default value
+; Field 'family_id' doesn't have a default value
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:258) ~[spring-jdbc-6.1.1.jar:6.1.1]
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107) ~[spring-jdbc-6.1.1.jar:6.1.1]
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92) ~[mybatis-spring-3.0.3.jar:3.0.3]
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439) ~[mybatis-spring-3.0.3.jar:3.0.3]
+	at jdk.proxy2/jdk.proxy2.$Proxy83.insert(Unknown Source) ~[na:na]
+	at org.mybatis.spring.SqlSessionTemplate.insert(SqlSessionTemplate.java:272) ~[mybatis-spring-3.0.3.jar:3.0.3]
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:59) ~[mybatis-plus-core-3.5.5.jar:3.5.5]
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152) ~[mybatis-plus-core-3.5.5.jar:3.5.5]
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89) ~[mybatis-plus-core-3.5.5.jar:3.5.5]
+	at jdk.proxy2/jdk.proxy2.$Proxy96.insert(Unknown Source) ~[na:na]
+	at com.baomidou.mybatisplus.extension.service.IService.save(IService.java:60) ~[mybatis-plus-extension-3.5.5.jar:3.5.5]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:352) ~[spring-aop-6.1.1.jar:6.1.1]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:713) ~[spring-aop-6.1.1.jar:6.1.1]
+	at com.family.myfamily.service.impl.MemorialServiceImpl$$SpringCGLIB$$0.save(<generated>) ~[classes/:na]
+	at com.family.myfamily.controller.MemorialController.create(MemorialController.java:63) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:254) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:182) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:917) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:829) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.16.jar:6.0]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.1.1.jar:6.1.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.16.jar:6.0]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at com.family.myfamily.filter.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:52) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.2.0.jar:6.2.0]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.1.jar:6.1.1]
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:340) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61) ~[tomcat-embed-core-10.1.16.jar:10.1.16]
+	at java.base/java.lang.Thread.run(Thread.java:1570) ~[na:na]
+Caused by: java.sql.SQLException: Field 'family_id' doesn't have a default value
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:130) ~[mysql-connector-j-8.0.33.jar:8.0.33]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122) ~[mysql-connector-j-8.0.33.jar:8.0.33]
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:916) ~[mysql-connector-j-8.0.33.jar:8.0.33]
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:354) ~[mysql-connector-j-8.0.33.jar:8.0.33]
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44) ~[HikariCP-5.0.1.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java) ~[HikariCP-5.0.1.jar:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58) ~[mybatis-3.5.15.jar:3.5.15]
+	at jdk.proxy3/jdk.proxy3.$Proxy112.execute(Unknown Source) ~[na:na]
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.update(PreparedStatementHandler.java:48) ~[mybatis-3.5.15.jar:3.5.15]
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.update(RoutingStatementHandler.java:75) ~[mybatis-3.5.15.jar:3.5.15]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61) ~[mybatis-3.5.15.jar:3.5.15]
+	at jdk.proxy2/jdk.proxy2.$Proxy110.update(Unknown Source) ~[na:na]
+	at org.apache.ibatis.executor.SimpleExecutor.doUpdate(SimpleExecutor.java:50) ~[mybatis-3.5.15.jar:3.5.15]
+	at org.apache.ibatis.executor.BaseExecutor.update(BaseExecutor.java:117) ~[mybatis-3.5.15.jar:3.5.15]
+	at org.apache.ibatis.executor.CachingExecutor.update(CachingExecutor.java:76) ~[mybatis-3.5.15.jar:3.5.15]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.apache.ibatis.plugin.Invocation.proceed(Invocation.java:49) ~[mybatis-3.5.15.jar:3.5.15]
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:106) ~[mybatis-plus-extension-3.5.5.jar:3.5.5]
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59) ~[mybatis-3.5.15.jar:3.5.15]
+	at jdk.proxy2/jdk.proxy2.$Proxy108.update(Unknown Source) ~[na:na]
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.update(DefaultSqlSession.java:197) ~[mybatis-3.5.15.jar:3.5.15]
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.insert(DefaultSqlSession.java:184) ~[mybatis-3.5.15.jar:3.5.15]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425) ~[mybatis-spring-3.0.3.jar:3.0.3]
+	... 108 common frames omitted
+
