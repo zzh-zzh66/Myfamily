@@ -24,8 +24,8 @@ String evaluationPrompt = """
 |------|------|---------|
 | 基本信息 | 20分 | 提供姓名、关系、生卒年（允许估计年份） |
 | 整体印象 | 15分 | 描述人物整体特点，≥50字 |
-| 外貌习惯 | 15分 | 提供外貌描述 OR 习惯 OR 口头禅（任一项） |
-| 性格情感 | 20分 | 提供性格描述 OR 情感表达方式（任一项） |
+| 外貌习惯 | 15分 | 提供外貌描述 OR 习惯 OR 口头禅（任一项即可） |
+| 性格情感 | 20分 | 提供性格描述 OR 情感表达方式（任一项即可） |
 | 回忆事件 | 30分 | 每提供一个完整回忆（时间+事件+反应）得15分，最多30分 |
 
 【回忆事件完整标准】
@@ -49,12 +49,12 @@ String evaluationPrompt = """
   "details": {
     "basicInfo": {"score": 20, "complete": true, "desc": "完整提供"},
     "overall": {"score": 15, "complete": true, "desc": "80字，完整"},
-    "appearance": {"score": 10, "complete": false, "desc": "缺少外貌描述，有习惯和口头禅"},
-    "personality": {"score": 15, "complete": true, "desc": "有性格和情感表达"},
-    "memories": {"score": 25, "complete": false, "desc": "提供1个完整回忆，得15分；另1个缺少反应，得10分"}
+    "appearance": {"score": 15, "complete": true, "desc": "提供外貌和口头禅"},
+    "personality": {"score": 15, "complete": true, "desc": "有性格描述"},
+    "memories": {"score": 20, "complete": false, "desc": "提供1个完整回忆，得15分；另1个缺少反应，得10分"}
   },
-  "missing": ["缺少外貌描述", "回忆事件不足，建议再提供1个完整回忆"],
-  "suggestions": ["建议补充外貌描写", "建议完善第二个回忆的细节"]
+  "missing": ["回忆事件不足，建议再提供1个完整回忆"],
+  "suggestions": ["建议完善第二个回忆的细节"]
 }
 
 【待评估文档】
@@ -126,7 +126,7 @@ String extractionPrompt = """
 
 {
   "name": "姓名，来自文档开头YAML的name字段",
-  "title": "头衔，来自纪念堂记录",
+  "title": "头衔，来自纪念堂记录（注意：不是YAML，而是系统传入的memorial.title）",
   "relationship": "与用户的亲属关系，来自YAML的relationship字段",
   "birthYear": "出生年，来自YAML的birthYear字段",
   "deathYear": "去世年，来自YAML的deathYear字段",

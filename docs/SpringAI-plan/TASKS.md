@@ -40,13 +40,13 @@
 
 | 任务 | 说明 | 优先级 |
 |------|------|--------|
-| 1.4.1 | 创建 AgentController | P0 |
-| 1.4.2 | 实现 getAgentStatus（获取状态） | P0 |
-| 1.4.3 | 实现 createAgent（创建智能体） | P0 |
-| 1.4.4 | 实现 uploadDocument（上传文档） | P0 |
-| 1.4.5 | 实现 evaluateDocument（评估） | P0 |
-| 1.4.6 | 实现 chat（对话） | P0 |
-| 1.4.7 | 实现 deleteAgent（删除） | P1 |
+| 1.4.1 | 创建 MemorialAgentController 或添加到 MemorialController | P0 |
+| 1.4.2 | 实现 getAgentStatus（GET /memorials/{id}/agent） | P0 |
+| 1.4.3 | 实现 createAgent（POST /memorials/{id}/agent） | P0 |
+| 1.4.4 | 实现 uploadDocument（POST /memorials/{id}/agent/document） | P0 |
+| 1.4.5 | 实现 evaluateDocument（POST /memorials/{id}/agent/evaluate） | P0 |
+| 1.4.6 | 实现 chat（POST /memorials/{id}/agent/chat） | P0 |
+| 1.4.7 | 实现 deleteAgent（DELETE /memorials/{id}/agent） | P1 |
 
 ---
 
